@@ -1,100 +1,406 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cartoon Head Puzzle Studio — Prototip</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime AMV Auto Studio — Kimning boshi?</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#10172a;color:#f5f7ff;font-family:Arial,sans-serif}
-header,main,footer{max-width:1250px;margin:auto;padding:20px}h1{margin:0 0 8px;font-size:30px}p{color:#b9c5df;line-height:1.5}
-main{display:grid;grid-template-columns:390px 1fr;gap:18px}.panel{background:#1a2540;border:1px solid #344566;border-radius:16px;padding:16px}
-h2{font-size:18px;margin:0 0 12px}.step{margin:12px 0;padding:12px;background:#111b31;border-radius:12px}
-input,button{font:inherit}input[type=file]{width:100%;font-size:12px}button{border:0;border-radius:9px;padding:10px 13px;background:#7658ff;color:white;font-weight:bold;cursor:pointer;margin:4px 3px 4px 0}button.alt{background:#344665}button.good{background:#00a88c}button:disabled{opacity:.4;cursor:not-allowed}
-#editor{width:100%;max-height:370px;object-fit:contain;background:#fff;border-radius:9px;touch-action:pan-y;cursor:crosshair}
-.small{font-size:12px;color:#b9c5df}.status{color:#6de6db;font-weight:bold;font-size:13px}
-canvas#stage{width:100%;aspect-ratio:16/9;background:#f4f7ff;border-radius:13px;display:block}
-.controls{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}.slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}.slot{background:#111b31;padding:9px;border-radius:10px}.slot b{display:block;font-size:13px;margin-bottom:6px}
-.progress{height:7px;background:#344665;border-radius:10px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:#47dfcf}
-@media(max-width:900px){main{grid-template-columns:1fr}header,main,footer{padding:14px}}
-</style></head>
+:root{--bg:#090b18;--panel:#12172b;--panel2:#191f39;--line:#2b3459;--pink:#ff4fa3;--cyan:#43e7ff;--text:#f4f5ff;--muted:#aab2d4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0%,#20234b 0,#090b18 45%);color:var(--text);font:15px/1.45 system-ui,Arial}
+header{padding:22px 5%;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:.5px}h1 span{color:var(--pink)}.sub{color:var(--muted);margin-top:5px}
+main{width:min(1400px,94%);margin:24px auto;display:grid;grid-template-columns:360px 1fr;gap:20px}
+.panel{background:linear-gradient(160deg,var(--panel),#0e1326);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 15px 45px #0005}
+h2{font-size:16px;margin:0 0 14px;color:#fff}h3{font-size:13px;color:var(--cyan);margin:18px 0 8px;text-transform:uppercase;letter-spacing:1px}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}
+input[type=file],select,button{width:100%;border-radius:10px;border:1px solid var(--line);background:#0b1021;color:var(--text);padding:11px}
+input[type=file]{font-size:12px;padding:8px}input[type=range]{width:100%;accent-color:var(--pink)}
+button{cursor:pointer;font-weight:700;transition:.2s}button:hover{filter:brightness(1.2);transform:translateY(-1px)}
+.primary{background:linear-gradient(90deg,#ff3f98,#9c59ff);border:0;color:white;margin-top:14px}
+.secondary{background:#1b2342}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.card{display:flex;gap:10px;background:#0c1226;border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:8px}
+.card canvas{width:64px;height:92px;border-radius:8px;background:repeating-conic-gradient(#1a2142 0% 25%,#10162e 0% 50%) 50%/12px 12px;flex:none}
+.card .cinfo{flex:1;min-width:0}.card b{font-size:13px}.card label{margin:4px 0 2px;font-size:12px}
+.workspace{display:flex;flex-direction:column;gap:16px;min-width:0}
+.preview-panel{padding:18px;display:flex;flex-direction:column;align-items:center}
+#stage{width:min(100%,440px);aspect-ratio:9/16;background:radial-gradient(circle,#24294d,#070a15 72%);border:1px solid #3c4774;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 0 35px #8d54ff22}
+canvas#canvas{width:100%;height:100%;display:block}
+.preview-actions{display:flex;gap:9px;width:min(100%,440px);margin-top:12px}.preview-actions button{flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#0c1226;border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:20px;color:var(--cyan)}.stat small{color:var(--muted)}
+.timeline{height:92px;background:#0a1021;border:1px solid var(--line);border-radius:12px;position:relative;overflow:hidden;padding:12px}
+.track{height:34px;border-radius:6px;background:linear-gradient(90deg,#ff4fa3,#8b5cff,#43e7ff);opacity:.85;margin-top:8px;position:relative}
+.beat{position:absolute;top:0;height:34px;width:1px;background:#fff;opacity:.45}
+.ev{position:absolute;top:-6px;height:46px;width:4px;border-radius:2px}
+.ev.ok{background:#2cff9a}.ev.no{background:#ff2a55}
+#status{color:var(--cyan);font-size:13px;min-height:20px;margin-top:10px}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+@media(max-width:850px){main{grid-template-columns:1fr}}
+</style>
+</head>
 <body>
-<header><h1>🎭 Cartoon Head Puzzle Studio</h1><p>4 ta qahramonni yuklang, har bir boshning chetini belgilang. So‘ng boshlar tanalarni bittadan tekshirib, o‘z joyini topadi.</p></header>
+<header>
+ <div><h1>ANIME <span>AMV</span> AUTO STUDIO</h1><div class="sub">Kimning boshi qaysi tanada? — avtomatik montaj</div></div>
+ <div class="sub">9:16 • 30 FPS • Auto Montage</div>
+</header>
 <main>
-<section class="panel">
-<h2>1. Qahramon rasmlari</h2>
-<div class="slots" id="slots"></div>
-<div class="step">
-<b>2. Bosh chegarasini belgilang</b>
-<p class="small">Rasm tanlangach, pastdagi rasm ustida boshning cheti bo‘ylab nuqtalarni bosing. Shlyapa, quloq va shoxlarni ham kontur ichiga oling. Kamida 5 nuqta qo‘ying, so‘ng “Kontur tugadi”ni bosing.</p>
-<canvas id="editor" width="600" height="600"></canvas>
-<div class="controls"><button id="finish" disabled>Kontur tugadi</button><button id="undo" class="alt" disabled>Oxirgi nuqtani bekor qilish</button><button id="clear" class="alt" disabled>Kontur tozalash</button></div>
-<div class="small" id="editStatus">Avval qahramon rasmini yuklang.</div>
-</div>
-<div class="step">
-<b>3. Puzzle animatsiyasi</b>
-<p class="small">Har bir bosh yuqoriga ko‘tariladi. Keyin 1-bosh 1–4-tanani tekshiradi; mosini topganda birikadi. Keyin 2-, 3- va 4-bosh ham xuddi shunday qiladi.</p>
-<label class="small">Davomiylik: <span id="durationText">28</span> soniya</label><br><input id="duration" type="range" min="20" max="48" value="28" step="2" style="width:100%">
-<div class="controls"><button id="play" disabled>▶ Ko‘rib chiqish</button><button id="stop" class="alt" disabled>To‘xtatish</button><button id="export" class="good" disabled>WebM video yuklash</button></div>
-</div>
-<div class="status" id="status">0/4 rasm yuklandi</div><div class="progress"><div class="bar" id="bar"></div></div>
-</section>
-<section class="panel">
-<h2>Video ko‘rinishi — 16:9</h2>
-<canvas id="stage" width="1920" height="1080"></canvas>
-<p class="small">Tekshiruv ketma-ketligi ko‘rinishi: bosh nomzod tanaga yaqinlashadi. Noto‘g‘ri tana ustida qisqa “×” belgisi chiqadi, to‘g‘ri tanada esa bosh joyiga mahkam birikadi.</p>
-</section></main>
-<footer class="small">Prototip: kontur foydalanuvchi tomonidan chiziladi, shu sababli oddiy oval kesimga qaraganda aniqroq ajratish mumkin. Eksport brauzer qo‘llasa WebM formatida.</footer>
+ <aside class="panel">
+  <h2>1. Personajlar (4 tagacha)</h2>
+  <div id="cards"></div>
+  <label>Fonni o‘chirish usuli</label>
+  <select id="method">
+   <option value="fast">Tez — oddiy bir xil fonli rasm uchun</option>
+   <option value="ai">AI — aniqroq (internet kerak, birinchi marta sekin)</option>
+  </select>
+  <label>Sezgirlik (tez usul) <span id="tolValue">55</span></label>
+  <input id="tol" type="range" min="15" max="140" value="55">
+  <button class="secondary" id="reprocessBtn" style="margin-top:10px">↻ Fonni qayta o‘chirish</button>
+
+  <h3>2. Orqa fon va musiqa</h3>
+  <label>Orqa fon rasmi (ixtiyoriy)</label><input id="bgInput" type="file" accept="image/*">
+  <label>Musiqa (MP3 / WAV / OGG)</label><input id="audioInput" type="file" accept="audio/*">
+
+  <h3>3. Sozlamalar</h3>
+  <label>Kayfiyat</label>
+  <select id="mood"><option value="energetic">Energetic AMV</option><option value="dreamy">Dreamy Anime</option><option value="dark">Dark Battle</option><option value="neon">Neon Rush</option></select>
+  <label>Effekt kuchi <span id="strengthValue">75%</span></label><input id="strength" type="range" min="20" max="100" value="75">
+  <label>Ritmga moslash</label><select id="sync"><option value="high">Kuchli — har beatda</option><option value="medium" selected>O‘rtacha</option><option value="soft">Yumshoq</option></select>
+  <label>Tezlik</label><select id="speed"><option value="0.7">Sekin</option><option value="1" selected>Oddiy</option><option value="1.5">Tez</option></select>
+  <button class="secondary" id="analyzeBtn" style="margin-top:14px">♫ MUSIQANI QAYTA TAHLIL QILISH</button>
+  <button class="primary" id="autoBtn">✦ AUTO MONTAGE YARATISH</button>
+
+  <h3>4. Eksport</h3>
+  <button class="primary" id="exportBtn" style="margin-top:0">VIDEO EXPORT (WEBM)</button>
+  <div id="status">Kamida 2 ta personaj rasmini yuklang.</div>
+  <p class="note">Har bir rasmdagi qizil chiziq bosh va tanani ajratadi. Chiziqni bo‘yin darajasiga suring. Export vaqtida sahifani boshqa tabga almashtirmang.</p>
+ </aside>
+ <section class="workspace">
+  <div class="panel preview-panel">
+   <h2 style="width:min(100%,440px)">LIVE PREVIEW — 9:16</h2>
+   <div id="stage"><canvas id="canvas" width="720" height="1280"></canvas></div>
+   <div class="preview-actions"><button class="secondary" id="playBtn">▶ PLAY</button><button class="secondary" id="pauseBtn">Ⅱ PAUSE</button><button class="secondary" id="restartBtn">↺ RESET</button></div>
+  </div>
+  <div class="panel">
+   <h2>Audio va timeline</h2>
+   <div class="stats">
+    <div class="stat"><b id="bpm">—</b><small>Taxminiy BPM</small></div>
+    <div class="stat"><b id="beats">—</b><small>Beat nuqtalari</small></div>
+    <div class="stat"><b id="length">—</b><small>Video davomiyligi</small></div>
+   </div>
+   <h3>Auto timeline (yashil — to‘g‘ri tana, qizil — xato tana)</h3>
+   <div class="timeline"><div id="timelineLabel" class="sub">Personajlar yuklangach timeline shakllanadi</div><div class="track" id="track"></div></div>
+  </div>
+ </section>
+</main>
+<audio id="audio" loop></audio>
 <script>
-const N=4, names=['Ko‘k ajdarcha','Tulkicha','Panda','Sehrgar quyoncha'], imgs=Array(4).fill(null), polys=Array.from({length:4},()=>[]), heads=Array(4).fill(null), bodyCanvases=Array(4).fill(null);
-let current=0, done=Array(4).fill(false), raf=0, rec=null, chunks=[], audio=null, start=0, dur=28;
-const editor=document.getElementById('editor'), ec=editor.getContext('2d'), stage=document.getElementById('stage'), c=stage.getContext('2d');
-const slots=document.getElementById('slots'), status=document.getElementById('status'), bar=document.getElementById('bar');
-names.forEach((n,i)=>{let d=document.createElement('div');d.className='slot';d.innerHTML=`<b>${i+1}. ${n}</b><input type="file" accept="image/*" data-i="${i}"><button class="alt" data-select="${i}">Konturini tahrirlash</button><div class="small" id="state${i}">Rasm yuklanmagan</div>`;slots.appendChild(d);});
-slots.addEventListener('change',e=>{if(e.target.type!=='file')return;let i=+e.target.dataset.i,f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{imgs[i]=im;polys[i]=[];heads[i]=null;bodyCanvases[i]=null;document.getElementById('state'+i).textContent='Rasm yuklandi — kontur belgilang';select(i);update();};im.src=URL.createObjectURL(f);});
-slots.addEventListener('click',e=>{if(e.target.dataset.select!==undefined)select(+e.target.dataset.select);});
-function fitRect(im,w,h){let s=Math.min(w/im.width,h/im.height);return {x:(w-im.width*s)/2,y:(h-im.height*s)/2,w:im.width*s,h:im.height*s,s};}
-function select(i){current=i;drawEditor();document.getElementById('editStatus').textContent=imgs[i]?'Qahramon '+(i+1)+' konturini belgilang.':'Bu qahramon uchun avval rasm yuklang.';document.getElementById('finish').disabled=!imgs[i];document.getElementById('undo').disabled=false;document.getElementById('clear').disabled=false;}
-function drawEditor(){ec.clearRect(0,0,600,600);ec.fillStyle='#fff';ec.fillRect(0,0,600,600);let im=imgs[current];if(!im)return;let r=fitRect(im,600,600);ec.drawImage(im,r.x,r.y,r.w,r.h);let p=polys[current];if(p.length){ec.beginPath();p.forEach((pt,k)=>k?ec.lineTo(pt.x,pt.y):ec.moveTo(pt.x,pt.y));ec.strokeStyle='#ff2878';ec.lineWidth=4;ec.stroke();p.forEach(pt=>{ec.beginPath();ec.arc(pt.x,pt.y,6,0,Math.PI*2);ec.fillStyle='#ff2878';ec.fill();});}}
-editor.addEventListener('click',e=>{if(!imgs[current]||done[current])return;let b=editor.getBoundingClientRect(),x=(e.clientX-b.left)*600/b.width,y=(e.clientY-b.top)*600/b.height;polys[current].push({x,y});drawEditor();document.getElementById('editStatus').textContent=polys[current].length+' ta nuqta belgilandi.';});
-document.getElementById('undo').onclick=()=>{polys[current].pop();drawEditor();};
-document.getElementById('clear').onclick=()=>{polys[current]=[];done[current]=false;heads[current]=null;bodyCanvases[current]=null;drawEditor();update();};
-document.getElementById('finish').onclick=()=>{if(polys[current].length<5){alert('Bosh atrofida kamida 5 ta nuqta belgilang.');return;}cutHead(current);done[current]=true;document.getElementById('state'+current).textContent='Bosh konturi tayyor ✓';document.getElementById('editStatus').textContent='Bosh ajratildi. Keyingi qahramonni tanlang.';update();};
-function cutHead(i){
- let im=imgs[i],r=fitRect(im,600,600),pts=polys[i].map(p=>({x:(p.x-r.x)/r.w*im.width,y:(p.y-r.y)/r.h*im.height}));
- let minX=Math.max(0,Math.min(...pts.map(p=>p.x))),maxX=Math.min(im.width,Math.max(...pts.map(p=>p.x))),minY=Math.max(0,Math.min(...pts.map(p=>p.y))),maxY=Math.min(im.height,Math.max(...pts.map(p=>p.y)));
- let pad=8;minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(im.width,maxX+pad);maxY=Math.min(im.height,maxY+pad);
- let sx=minX,sy=minY,sw=maxX-minX,sh=maxY-minY,mask=document.createElement('canvas');mask.width=Math.ceil(sw);mask.height=Math.ceil(sh);let m=mask.getContext('2d');m.save();m.beginPath();pts.forEach((p,k)=>k?m.lineTo(p.x-sx,p.y-sy):m.moveTo(p.x-sx,p.y-sy));m.closePath();m.clip();m.drawImage(im,sx,sy,sw,sh,0,0,sw,sh);m.restore();heads[i]=mask;
- let body=document.createElement('canvas');body.width=im.width;body.height=im.height;let b=body.getContext('2d');b.drawImage(im,0,0);b.save();b.beginPath();pts.forEach((p,k)=>k?b.lineTo(p.x,p.y):b.moveTo(p.x,p.y));b.closePath();b.fillStyle='#ffffff';b.fill();b.restore();bodyCanvases[i]=body;
-};
-function update(){let loaded=imgs.filter(Boolean).length,ready=done.filter(Boolean).length;status.textContent=`${loaded}/4 rasm yuklandi · ${ready}/4 bosh ajratildi`;document.getElementById('play').disabled=ready!==4;document.getElementById('export').disabled=ready!==4;drawIdle();}
-function layout(i){return {x:150+i*410,y:245,w:330,h:600};}
-function bg(){let g=c.createLinearGradient(0,0,0,1080);g.addColorStop(0,'#eaf2ff');g.addColorStop(1,'#b9c9e8');c.fillStyle=g;c.fillRect(0,0,1920,1080);c.fillStyle='#ffffff88';c.fillRect(0,850,1920,230);c.fillStyle='#fff';c.font='bold 48px Arial';c.textAlign='center';}
-function drawPerson(i,hideHead=false){let r=layout(i);c.drawImage(bodyCanvases[i],r.x,r.y,r.w,r.h);if(!hideHead)c.drawImage(heads[i],r.x+80,r.y+10,170,170);}
-function drawIdle(){bg();if(imgs.filter(Boolean).length===0){c.fillStyle='#26385b';c.font='bold 58px Arial';c.fillText('4 ta qahramon rasmini yuklang',960,530);return;}for(let i=0;i<4;i++){if(imgs[i]){if(done[i])drawPerson(i,false);else{let r=layout(i);c.drawImage(imgs[i],r.x,r.y,r.w,r.h);}}c.fillStyle='#233456';c.font='bold 27px Arial';c.fillText(names[i],layout(i).x+165,920);}}
-function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
-function frame(sec){bg();let stage1=2,stage2=5,checkStart=7,per=(dur-checkStart)/10;
- // all bodies first, with their head spaces blank
- for(let i=0;i<4;i++){drawPerson(i,true);c.fillStyle='#233456';c.font='bold 24px Arial';c.fillText('Tana '+(i+1),layout(i).x+165,920);}
- // heads rise and shuffle overhead
- for(let i=0;i<4;i++){let r=layout(i),x=r.x+165,y=r.y+90;if(sec<stage1){c.drawImage(heads[i],x-80,y-70,160,160);}else if(sec<stage2){let q=ease((sec-stage1)/(stage2-stage1));let tx=960+(i-1.5)*190,ty=150+Math.sin(sec*3+i)*30;c.drawImage(heads[i],x-80,y-70-q*250,160,160);if(q>.9)c.drawImage(heads[i],tx-80,ty-80,160,160);}else if(sec<checkStart){let a=sec*1.7+i*Math.PI/2,xx=960+Math.cos(a)*300,yy=170+Math.sin(a)*65;c.drawImage(heads[i],xx-75,yy-75,150,150);}}
- if(sec>=checkStart){
-  // one head at a time checks bodies in order; correct body index equals head index
-  let elapsed=sec-checkStart,headIndex=Math.min(3,Math.floor(elapsed/per/4)),within=elapsed-headIndex*per*4,bodyIndex=Math.min(3,Math.floor(within/per)),q=Math.min(1,(within-bodyIndex*per)/per);
-  // draw heads already matched
-  for(let i=0;i<headIndex;i++){let r=layout(i);c.drawImage(heads[i],r.x+80,r.y+5,170,170);c.fillStyle='#00a987';c.font='bold 24px Arial';c.fillText('MOS KELDI ✓',r.x+165,205);}
-  // active head travels to each candidate position, then snaps if matching
-  let r=layout(bodyIndex),targetX=r.x+165,targetY=r.y+90,fromX=960,fromY=170;
-  let x=fromX+(targetX-fromX)*ease(q),y=fromY+(targetY-fromY)*ease(q);
-  c.drawImage(heads[headIndex],x-85,y-85,170,170);
-  if(q>.72){c.fillStyle=bodyIndex===headIndex?'#00a987':'#e14d65';c.font='bold 52px Arial';c.fillText(bodyIndex===headIndex?'✓':'×',targetX+115,targetY);}
-  if(bodyIndex===headIndex&&q>.98){c.drawImage(heads[headIndex],targetX-85,targetY-85,170,170);}
-  if(sec>dur-1){for(let i=0;i<4;i++){let rr=layout(i);c.drawImage(heads[i],rr.x+80,rr.y+5,170,170);}c.fillStyle='#5d37dc';c.font='bold 54px Arial';c.fillText('HAMMA BOSHLAR O‘Z TANASINI TOPDI!',960,1020);}
+const $=id=>document.getElementById(id);
+const W=720,H=1280,GROUND=1150;
+const canvas=$('canvas'),ctx=canvas.getContext('2d'),audio=$('audio');
+let chars=[null,null,null,null], bgImg=null, beats=[], musicDur=0, sched=null;
+let running=false,startAt=0,elapsed=0,raf=0,sfxIdx=0,recorder=null;
+let audioCtx=null,musicGain=null,sfxGain=null,mediaDest=null,musicSrc=null;
+const particles=Array.from({length:90},()=>({x:Math.random(),y:Math.random(),s:1+Math.random()*4,v:.15+Math.random()*.7}));
+const palettes={energetic:['#ff3f9d','#50eaff'],dreamy:['#a88cff','#f7a9e8'],dark:['#ff315a','#5d65ff'],neon:['#36f4ff','#ff3cc7']};
+const status=t=>$('status').textContent=t;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const loadImg=src=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src});
+const formatTime=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+const easeInOut=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+const easeOutBack=u=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(u-1,3)+c1*Math.pow(u-1,2)};
+
+/* ---------- Personaj kartalari ---------- */
+for(let i=0;i<4;i++){
+ const d=document.createElement('div');d.className='card';
+ d.innerHTML=`<canvas id="th${i}" width="128" height="184"></canvas><div class="cinfo"><b>Personaj ${i+1}</b><input type="file" id="ci${i}" accept="image/*"><label>Bosh/tana chizig‘i <span id="cr${i}">28%</span></label><input type="range" id="cs${i}" min="8" max="55" value="28"></div>`;
+ $('cards').appendChild(d);
+ $('ci'+i).onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=await loadImg(URL.createObjectURL(f));
+  chars[i]={file:f,img,ratio:.28,cut:null};$('cs'+i).value=28;$('cr'+i).textContent='28%';
+  await processChar(i);
+ };
+ $('cs'+i).oninput=e=>{if(!chars[i])return;chars[i].ratio=e.target.value/100;$('cr'+i).textContent=e.target.value+'%';renderThumb(i)};
+}
+
+/* ---------- Fonni o'chirish ---------- */
+function toCanvas(img,maxSide=900){
+ const k=Math.min(1,maxSide/Math.max(img.width,img.height));
+ const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+ c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;
+}
+function floodRemove(img,tol){
+ const cv=toCanvas(img),g=cv.getContext('2d'),w=cv.width,h=cv.height;
+ const id=g.getImageData(0,0,w,h),d=id.data;
+ const px=(x,y)=>(y*w+x)*4;
+ const corners=[[0,0],[w-1,0],[0,h-1],[w-1,h-1]];
+ if(corners.every(([x,y])=>d[px(x,y)+3]<10))return cv; // allaqachon shaffof
+ const refs=corners.map(([x,y])=>{const p=px(x,y);return[d[p],d[p+1],d[p+2]]});
+ const match=p=>{if(d[p+3]<10)return true;let best=1e9;for(const r of refs){const dr=d[p]-r[0],dg=d[p+1]-r[1],db=d[p+2]-r[2];const v=Math.sqrt(dr*dr+dg*dg+db*db);if(v<best)best=v}return best<tol};
+ const vis=new Uint8Array(w*h),stack=[];
+ const push=(x,y)=>{const k=y*w+x;if(vis[k])return;if(match(k*4)){vis[k]=1;stack.push(k)}};
+ for(let x=0;x<w;x++){push(x,0);push(x,h-1)}for(let y=0;y<h;y++){push(0,y);push(w-1,y)}
+ while(stack.length){const k=stack.pop(),x=k%w,y=(k/w)|0;if(x>0)push(x-1,y);if(x<w-1)push(x+1,y);if(y>0)push(x,y-1);if(y<h-1)push(x,y+1)}
+ const out=new Uint8Array(w*h);
+ for(let k=0;k<w*h;k++){if(vis[k]){d[k*4+3]=0}}
+ for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const k=y*w+x;if(!vis[k]&&(vis[k-1]||vis[k+1]||vis[k-w]||vis[k+w]))out[k]=1}
+ for(let k=0;k<w*h;k++)if(out[k])d[k*4+3]=140;
+ g.putImageData(id,0,0);return cv;
+}
+function cropAlpha(cv){
+ const g=cv.getContext('2d'),w=cv.width,h=cv.height,d=g.getImageData(0,0,w,h).data;
+ let x0=w,y0=h,x1=0,y1=0;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(d[(y*w+x)*4+3]>20){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
+ if(x1<=x0||y1<=y0)return cv;
+ const c=document.createElement('canvas');c.width=x1-x0+1;c.height=y1-y0+1;
+ c.getContext('2d').drawImage(cv,x0,y0,c.width,c.height,0,0,c.width,c.height);return c;
+}
+async function processChar(i){
+ const c=chars[i];if(!c)return;
+ status('Personaj '+(i+1)+': fon o‘chirilmoqda...');
+ let cv=null;
+ if($('method').value==='ai'){
+  try{
+   const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+   const blob=await mod.removeBackground(c.file);
+   cv=toCanvas(await loadImg(URL.createObjectURL(blob)));
+  }catch(err){console.error(err);status('AI ishlamadi (internet yo‘qmi?). Tez usulga o‘tildi.')}
+ }
+ if(!cv)cv=floodRemove(c.img,Number($('tol').value));
+ c.cut=cropAlpha(cv);renderThumb(i);buildSchedule();
+ status(sched?'Tayyor. AUTO MONTAGE yoki PLAY ni bosing.':'Personaj '+(i+1)+' tayyor. Kamida 2 ta personaj kerak.');
+}
+async function processAll(){for(let i=0;i<4;i++)if(chars[i])await processChar(i)}
+function renderThumb(i){
+ const c=chars[i],cv=$('th'+i),g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
+ if(!c||!c.cut)return;
+ const k=Math.min((cv.width-8)/c.cut.width,(cv.height-8)/c.cut.height),w=c.cut.width*k,h=c.cut.height*k,x=(cv.width-w)/2,y=(cv.height-h)/2;
+ g.drawImage(c.cut,x,y,w,h);g.strokeStyle='#ff2a55';g.lineWidth=2;g.beginPath();g.moveTo(x-2,y+h*c.ratio);g.lineTo(x+w+2,y+h*c.ratio);g.stroke();
+}
+$('reprocessBtn').onclick=processAll;
+$('tol').oninput=e=>$('tolValue').textContent=e.target.value;
+$('strength').oninput=e=>$('strengthValue').textContent=e.target.value+'%';
+
+/* ---------- Orqa fon ---------- */
+$('bgInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;bgImg=await loadImg(URL.createObjectURL(f));draw(elapsed);status('Orqa fon qo‘yildi.')};
+
+/* ---------- Audio ---------- */
+function ensureAudio(){
+ if(audioCtx)return;
+ audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ musicSrc=audioCtx.createMediaElementSource(audio);
+ musicGain=audioCtx.createGain();musicGain.gain.value=.7;
+ sfxGain=audioCtx.createGain();sfxGain.gain.value=1;
+ mediaDest=audioCtx.createMediaStreamDestination();
+ musicSrc.connect(musicGain);musicGain.connect(audioCtx.destination);musicGain.connect(mediaDest);
+ sfxGain.connect(audioCtx.destination);sfxGain.connect(mediaDest);
+}
+function tone(type,f0,f1,t0,dur,vol){
+ const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+ o.type=type;o.frequency.setValueAtTime(f0,t0);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t0+dur);
+ g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol,t0+.02);g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+ o.connect(g);g.connect(sfxGain);o.start(t0);o.stop(t0+dur+.05);
+}
+function sfx(ok){
+ if(!audioCtx)return;const n=audioCtx.currentTime;
+ if(ok){tone('sine',660,null,n,.22,.5);tone('sine',990,null,n+.12,.35,.5);tone('triangle',1320,null,n+.12,.3,.2)}
+ else{tone('sawtooth',160,120,n,.22,.45);tone('square',150,110,n+.28,.28,.35)}
+}
+$('audioInput').onchange=e=>{const f=e.target.files[0];if(!f)return;audio.src=URL.createObjectURL(f);audio.load();status('Musiqa yuklandi. Tahlil qilinmoqda...');analyze()};
+async function analyze(){
+ if(!audio.src){status('Avval musiqa yuklang.');return}
+ try{
+  ensureAudio();
+  const arr=await (await fetch(audio.src)).arrayBuffer();
+  const buf=await audioCtx.decodeAudioData(arr.slice(0));
+  musicDur=buf.duration;
+  const data=buf.getChannelData(0),sr=buf.sampleRate,step=Math.floor(sr*.05),energy=[];
+  for(let i=0;i<data.length;i+=step){let s=0,n=Math.min(step,data.length-i);for(let j=0;j<n;j++)s+=data[i+j]*data[i+j];energy.push(Math.sqrt(s/n))}
+  const mean=energy.reduce((a,b)=>a+b,0)/energy.length,th=mean*1.55;beats=[];let last=-999;
+  for(let i=2;i<energy.length-2;i++){if(energy[i]>th&&energy[i]>=energy[i-1]&&energy[i]>energy[i+1]&&i-last>7){beats.push(i*.05);last=i}}
+  if(beats.length<4){beats=[];for(let t=0;t<musicDur;t+=.6)beats.push(t)}
+  const iv=[];for(let i=1;i<Math.min(beats.length,50);i++)iv.push(beats[i]-beats[i-1]);
+  const avg=iv.length?iv.reduce((a,b)=>a+b,0)/iv.length:.6;
+  $('bpm').textContent=Math.round(60/avg);$('beats').textContent=beats.length;
+  buildSchedule();status('Musiqa tahlil qilindi. Harakatlar ritmga moslandi.');
+ }catch(err){console.error(err);status('Audio tahlilida xatolik. MP3 yoki WAV sinab ko‘ring.')}
+}
+$('analyzeBtn').onclick=analyze;
+function pulseAt(t){
+ if(!beats.length)return 0;const tm=musicDur?t%musicDur:t;let best=1e9;
+ for(const b of beats){const d=Math.abs(b-tm);if(d<best)best=d}
+ return best<.12?1-best/.12:0;
+}
+
+/* ---------- Jadval (schedule) ---------- */
+function geo(c,slotW){
+ const w=c.cut.width,h=c.cut.height,hp=Math.round(h*c.ratio),s=Math.min(slotW*.94/w,540/h);
+ return{w,h,hp,s,bodyH:(h-hp)*s};
+}
+function buildSchedule(){
+ const act=chars.map((c,i)=>c&&c.cut?i:-1).filter(i=>i>=0);
+ if(act.length<2){sched=null;renderTimeline();return}
+ const n=act.length,slotChar=shuffle(act.slice()),speed=Number($('speed').value);
+ const tr=.75/speed,st=.95/speed,sync=$('sync').value;
+ const snap=x=>{if(!beats.length||sync==='soft')return x;for(const b of beats){if(b>=x){return b-x<.5?b:x}}return x};
+ let cur=3.2;const heads=[],events=[];
+ for(const ci of shuffle(act.slice())){
+  const own=slotChar.indexOf(ci);
+  const slots=shuffle(slotChar.filter(x=>x!==ci)).map(x=>slotChar.indexOf(x));slots.push(own);
+  const steps=[];
+  for(const sl of slots){
+   const t0=cur,t1=snap(cur+tr),t2=t1+st,ok=sl===own;
+   steps.push({t0,t1,t2,slot:sl,ok});events.push({t:t1,ok});cur=t2;
+  }
+  heads.push({c:ci,own,steps});cur+=.15;
+ }
+ events.sort((a,b)=>a.t-b.t);
+ sched={n,slotChar,heads,events,total:cur+2.6,slotW:W/n};
+ $('length').textContent=formatTime(sched.total);renderTimeline();
+}
+function renderTimeline(){
+ const tr=$('track');tr.innerHTML='';
+ if(!sched){$('timelineLabel').textContent='Personajlar yuklangach timeline shakllanadi';return}
+ if(musicDur)beats.forEach(b=>{for(let t=b;t<sched.total;t+=musicDur){const m=document.createElement('i');m.className='beat';m.style.left=(t/sched.total*100)+'%';tr.appendChild(m);if(!musicDur)break}});
+ sched.events.forEach(e=>{const m=document.createElement('i');m.className='ev '+(e.ok?'ok':'no');m.style.left=(e.t/sched.total*100)+'%';tr.appendChild(m)});
+ $('timelineLabel').textContent=sched.events.length+' ta urinish • '+sched.n+' ta personaj • '+formatTime(sched.total);
+}
+
+/* ---------- Chizish ---------- */
+const JF=[.9,1.3,1.1,.7],JP=[0,1.7,3.1,4.6],JG=[1.2,.8,1.5,1.0];
+function jam(ci,t){
+ return{x:W/2+210*Math.sin(t*JF[ci]+JP[ci]),y:370+110*Math.sin(t*JG[ci]*1.3+JP[ci]*1.4),rot:.35*Math.sin(t*2+JP[ci])};
+}
+function bodyTop(slot){const c=chars[sched.slotChar[slot]];return GROUND-geo(c,sched.slotW).bodyH}
+function attach(slot){return{x:sched.slotW*(slot+.5),y:bodyTop(slot)+8,rot:0}}
+function headState(h,t){
+ const s=h.steps;
+ if(t<s[0].t0)return{...jam(h.c,t),moving:false};
+ for(let k=0;k<s.length;k++){
+  const st=s[k];
+  if(t<st.t1){
+   const from=k===0?jam(h.c,st.t0):attach(s[k-1].slot),to=attach(st.slot),u=easeInOut((t-st.t0)/(st.t1-st.t0));
+   return{x:from.x+(to.x-from.x)*u,y:from.y+(to.y-from.y)*u-Math.sin(Math.PI*u)*130,rot:(1-u)*from.rot*(1-u)+Math.sin(u*6)*.08,moving:true};
+  }
+  if(t<st.t2||k===s.length-1){
+   const a=attach(st.slot),age=t-st.t1;
+   const shake=!st.ok?Math.sin(age*70)*Math.max(0,1-age/.5)*14:0;
+   return{x:a.x+shake,y:a.y,rot:!st.ok?Math.sin(age*70)*.04*Math.max(0,1-age/.5):0,moving:false};
+  }
  }
 }
-function audioStart(){try{audio=new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type='triangle';o.frequency.value=392;g.gain.value=.045;o.connect(g);g.connect(audio.destination);o.start();window.osc=o;window.gain=g;window.tone=setInterval(()=>{if(!audio)return;o.frequency.setTargetAtTime([392,440,523,659,523,440][Math.floor(Math.random()*6)],audio.currentTime,.04);},240);}catch(e){}}
-function audioStop(){if(window.tone)clearInterval(window.tone);if(audio){audio.close();audio=null;}}
-function run(exporting=false){cancelAnimationFrame(raf);dur=+document.getElementById('duration').value;start=performance.now();audioStart();if(exporting){let stream=stage.captureStream(30);try{rec=new MediaRecorder(stream,{mimeType:'video/webm'});}catch(e){rec=new MediaRecorder(stream);}chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(chunks,{type:'video/webm'}));a.download='cartoon-head-puzzle.webm';a.click();};rec.start();}
- document.getElementById('stop').disabled=false;function tick(now){let s=(now-start)/1000;frame(Math.min(s,dur));bar.style.width=Math.min(100,s/dur*100)+'%';if(s<dur)raf=requestAnimationFrame(tick);else{audioStop();document.getElementById('stop').disabled=true;if(rec&&rec.state!=='inactive')rec.stop();}}raf=requestAnimationFrame(tick);}
-document.getElementById('play').onclick=()=>run(false);document.getElementById('export').onclick=()=>run(true);document.getElementById('stop').onclick=()=>{cancelAnimationFrame(raf);audioStop();if(rec&&rec.state!=='inactive')rec.stop();document.getElementById('stop').disabled=true;};
-document.getElementById('duration').oninput=e=>document.getElementById('durationText').textContent=e.target.value;
-drawIdle();
-</script></body></html>
+function drawMark(x,y,ok,pop,alpha){
+ ctx.save();ctx.translate(x,y);ctx.scale(pop,pop);ctx.globalAlpha=alpha;
+ ctx.shadowColor=ok?'#2cff9a':'#ff2a55';ctx.shadowBlur=30;
+ ctx.beginPath();ctx.arc(0,0,72,0,Math.PI*2);ctx.fillStyle=ok?'rgba(30,200,110,.95)':'rgba(235,30,60,.95)';ctx.fill();
+ ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=16;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+ if(ok){ctx.moveTo(-32,2);ctx.lineTo(-8,28);ctx.lineTo(36,-26)}else{ctx.moveTo(-28,-28);ctx.lineTo(28,28);ctx.moveTo(28,-28);ctx.lineTo(-28,28)}
+ ctx.stroke();ctx.restore();
+}
+function draw(t){
+ const mood=$('mood').value,colors=palettes[mood],power=Number($('strength').value)/100;
+ const sync=$('sync').value,amount=sync==='high'?1:sync==='medium'?.65:.35,pulse=pulseAt(t);
+ ctx.clearRect(0,0,W,H);
+ // fon
+ if(bgImg){
+  const k=Math.max(W/bgImg.width,H/bgImg.height)*(1.02+.04*pulse*power*amount),bw=bgImg.width*k,bh=bgImg.height*k;
+  ctx.drawImage(bgImg,(W-bw)/2,(H-bh)/2,bw,bh);ctx.fillStyle='rgba(5,7,19,.22)';ctx.fillRect(0,0,W,H);
+ }else{
+  const bg=ctx.createRadialGradient(W*.5,H*.42,10,W*.5,H*.5,H*.8);bg.addColorStop(0,mood==='dark'?'#25203c':'#22264a');bg.addColorStop(1,'#050713');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ }
+ ctx.save();ctx.globalCompositeOperation='screen';
+ particles.forEach(p=>{let y=(p.y-t*p.v*.09)%1;if(y<0)y+=1;ctx.beginPath();ctx.arc(p.x*W,y*H,p.s*(1+pulse),0,Math.PI*2);ctx.fillStyle=colors[Math.floor(p.x*2)%2];ctx.globalAlpha=.2+.35*power;ctx.fill()});
+ ctx.restore();
+ if(!sched){
+  ctx.fillStyle='#ffffffcc';ctx.font='bold 34px Arial';ctx.textAlign='center';ctx.fillText('Kamida 2 ta personaj yuklang',W/2,H/2);ctx.textAlign='left';return;
+ }
+ const sw=sched.slotW;let solved=0;
+ // yerdagi soya
+ for(let j=0;j<sched.n;j++){ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(sw*(j+.5),GROUND+6,sw*.38,14,0,0,Math.PI*2);ctx.fill()}
+ // tanalar
+ for(let j=0;j<sched.n;j++){
+  const c=chars[sched.slotChar[j]],g=geo(c,sw),bw=g.w*g.s;
+  ctx.save();ctx.shadowColor=colors[j%2];ctx.shadowBlur=22*power;
+  ctx.drawImage(c.cut,0,g.hp,g.w,g.h-g.hp,sw*(j+.5)-bw/2,GROUND-g.bodyH,bw,g.bodyH);ctx.restore();
+ }
+ // boshlar
+ const hs=sched.heads.map(h=>({h,s:headState(h,t)})).sort((a,b)=>(a.s.moving?1:0)-(b.s.moving?1:0));
+ for(const {h,s} of hs){
+  const c=chars[h.c],g=geo(c,sw),hw=g.w*g.s,hh=g.hp*g.s;
+  ctx.save();ctx.translate(s.x,s.y-hh/2);ctx.rotate(s.rot);ctx.shadowColor=colors[h.c%2];ctx.shadowBlur=28*power;
+  ctx.drawImage(c.cut,0,0,g.w,g.hp,-hw/2,-hh/2,hw,hh);ctx.restore();
+ }
+ // belgilar
+ for(const h of sched.heads){
+  for(const st of h.steps){
+   if(st.ok&&t>=st.t1)solved++;
+   if(t>=st.t1&&t<st.t2){
+    const age=t-st.t1,g=geo(chars[sched.slotChar[st.slot]],sw);
+    const pop=Math.max(.01,easeOutBack(Math.min(1,age/.28))),fade=Math.min(1,(st.t2-t)/.2);
+    drawMark(sw*(st.slot+.5),GROUND-g.bodyH*.55,st.ok,pop,fade);
+   }
+  }
+  const last=h.steps[h.steps.length-1];
+  if(t>=last.t2)drawMark(sw*(last.slot+.5),GROUND+44,true,.28,1);
+ }
+ // HUD
+ ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='bold 36px Arial';ctx.shadowColor=colors[0];ctx.shadowBlur=18;
+ ctx.fillText('KIMNING BOSHI QAYSI TANADA?',W/2,70);ctx.shadowBlur=0;
+ ctx.font='bold 26px Arial';ctx.fillStyle=colors[1];ctx.fillText('To‘g‘ri: '+solved+' / '+sched.n,W/2,108);
+ if(solved===sched.n){ctx.save();ctx.font='bold 54px Arial';ctx.fillStyle='#2cff9a';ctx.shadowColor='#2cff9a';ctx.shadowBlur=30;ctx.translate(W/2,H*.5);ctx.scale(1+.05*Math.sin(t*8),1+.05*Math.sin(t*8));ctx.fillText('HAMMASI TOPILDI!',0,0);ctx.restore()}
+ ctx.textAlign='left';
+ const vign=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vign.addColorStop(0,'transparent');vign.addColorStop(1,'#02030b99');ctx.fillStyle=vign;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle=colors[1];ctx.fillRect(34,H-40,(W-68)*Math.min(1,t/sched.total),5);
+}
+
+/* ---------- Pleyer ---------- */
+function resetSfx(t){sfxIdx=sched?sched.events.findIndex(e=>e.t>t):0;if(sfxIdx<0)sfxIdx=sched?sched.events.length:0}
+function tick(now){
+ if(!running)return;
+ elapsed=(now-startAt)/1000;
+ while(sfxIdx<sched.events.length&&sched.events[sfxIdx].t<=elapsed){sfx(sched.events[sfxIdx].ok);sfxIdx++}
+ if(elapsed>=sched.total){elapsed=sched.total;draw(elapsed);finish();return}
+ draw(elapsed);raf=requestAnimationFrame(tick);
+}
+function finish(){
+ running=false;cancelAnimationFrame(raf);audio.pause();
+ if(recorder){const r=recorder;recorder=null;r.stop()}
+}
+function play(){
+ if(!sched){status('Avval kamida 2 ta personaj yuklang.');return}
+ ensureAudio();audioCtx.resume();
+ if(elapsed>=sched.total)elapsed=0;
+ running=true;startAt=performance.now()-elapsed*1000;resetSfx(elapsed);
+ if(audio.src){try{audio.currentTime=musicDur?elapsed%musicDur:0}catch(e){}audio.play().catch(()=>{})}
+ cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
+}
+function pause(){running=false;cancelAnimationFrame(raf);audio.pause()}
+$('autoBtn').onclick=()=>{buildSchedule();if(!sched){status('Kamida 2 ta personaj rasmi kerak.');return}pause();elapsed=0;draw(0);status('Yangi auto-montaj tayyor. PLAY ni bosing.')};
+$('playBtn').onclick=play;
+$('pauseBtn').onclick=()=>{pause();status('Preview pauza qilindi.')};
+$('restartBtn').onclick=()=>{pause();elapsed=0;if(audio.src)audio.currentTime=0;draw(0)};
+$('speed').onchange=()=>{buildSchedule();elapsed=0;draw(0)};
+$('sync').onchange=()=>{buildSchedule();draw(elapsed)};
+$('mood').onchange=()=>draw(elapsed);$('strength').addEventListener('input',()=>draw(elapsed));
+
+/* ---------- Export ---------- */
+function exportVideo(){
+ if(!sched){status('Avval kamida 2 ta personaj yuklang.');return}
+ if(!canvas.captureStream||!window.MediaRecorder){status('Brauzer export qo‘llamaydi. Chrome da oching.');return}
+ try{
+  pause();ensureAudio();elapsed=0;
+  const vs=canvas.captureStream(30);
+  const stream=new MediaStream([...vs.getVideoTracks(),...mediaDest.stream.getAudioTracks()]);
+  const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';
+  const chunks=[];const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:6000000});
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>{const url=URL.createObjectURL(new Blob(chunks,{type:'video/webm'})),a=document.createElement('a');a.href=url;a.download='anime-amv-kimning-boshi.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);status('Video eksport qilindi: anime-amv-kimning-boshi.webm')};
+  recorder=rec;rec.start();play();
+  status('Video yozilmoqda ('+Math.round(sched.total)+' soniya)... sahifani yopmang va tabni almashtirmang.');
+ }catch(e){console.error(e);status('Eksport xatosi. Chrome da qayta urinib ko‘ring.')}
+}
+$('exportBtn').onclick=exportVideo;
+draw(0);
+</script>
+</body>
+</html>
