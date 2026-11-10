@@ -1,171 +1,100 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cartoon Head Puzzle Studio</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartoon Head Puzzle Studio — Prototip</title>
 <style>
-:root{--bg:#0b1020;--panel:#151d34;--panel2:#1d2946;--text:#f4f7ff;--muted:#aab6d3;--accent:#7c5cff;--cyan:#35d6e8;--line:#334264}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#25315b 0,#0b1020 45%);font-family:Inter,system-ui,Arial,sans-serif;color:var(--text)}
-header{padding:26px 22px 12px;max-width:1200px;margin:auto}h1{margin:0;font-size:clamp(25px,4vw,38px)}header p{color:var(--muted);margin:8px 0 0}
-main{max-width:1200px;margin:auto;padding:14px 22px 40px;display:grid;grid-template-columns:360px 1fr;gap:18px}
-.panel{background:linear-gradient(160deg,#192440,#111a30);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 15px 40px #0005}
-h2{font-size:17px;margin:0 0 14px}.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.slot{background:#0e172b;border:1px dashed #53658f;border-radius:12px;padding:10px;min-height:126px;position:relative}
-.slot label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.slot input{width:100%;font-size:11px}.thumb{width:100%;height:86px;object-fit:contain;margin-top:6px;background:#080e1c;border-radius:8px}
-.controls{display:grid;gap:13px;margin-top:16px}.field label{display:flex;justify-content:space-between;font-size:13px;color:#dce5ff;margin-bottom:6px}.field input,.field select{width:100%}
-input[type=range]{accent-color:var(--cyan)}select{background:#0e172b;color:white;border:1px solid var(--line);padding:9px;border-radius:9px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}
-button{border:0;border-radius:11px;padding:12px 14px;font-weight:750;cursor:pointer;color:white;background:var(--accent);transition:.2s}button:hover{filter:brightness(1.15);transform:translateY(-1px)}button:disabled{opacity:.4;cursor:not-allowed;transform:none}
-button.secondary{background:#263653;border:1px solid #43577d}button.green{background:linear-gradient(100deg,#00a88a,#22c6b3)}button.wide{grid-column:1/-1}
-.stage-wrap{min-width:0}.stage-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.status{font-size:12px;color:var(--cyan)}
-canvas{width:100%;aspect-ratio:16/9;background:#10182c;border-radius:14px;border:1px solid #42547c;display:block}
-.note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}.progress{height:6px;background:#263653;border-radius:9px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--cyan))}
-.adjust{margin-top:12px;padding:12px;background:#0e172b;border-radius:12px}.adjust summary{cursor:pointer;font-size:13px;font-weight:700}.adjust p{font-size:11px;color:var(--muted);line-height:1.45}
-.adjust-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.adjust-row label{font-size:11px;color:var(--muted)}.adjust-row input{width:100%}
-footer{max-width:1200px;margin:0 auto;padding:0 22px 28px;color:#8291b3;font-size:11px}
-@media(max-width:850px){main{grid-template-columns:1fr}.panel{padding:14px}header{padding-top:20px}}
-</style>
-</head>
+*{box-sizing:border-box}body{margin:0;background:#10172a;color:#f5f7ff;font-family:Arial,sans-serif}
+header,main,footer{max-width:1250px;margin:auto;padding:20px}h1{margin:0 0 8px;font-size:30px}p{color:#b9c5df;line-height:1.5}
+main{display:grid;grid-template-columns:390px 1fr;gap:18px}.panel{background:#1a2540;border:1px solid #344566;border-radius:16px;padding:16px}
+h2{font-size:18px;margin:0 0 12px}.step{margin:12px 0;padding:12px;background:#111b31;border-radius:12px}
+input,button{font:inherit}input[type=file]{width:100%;font-size:12px}button{border:0;border-radius:9px;padding:10px 13px;background:#7658ff;color:white;font-weight:bold;cursor:pointer;margin:4px 3px 4px 0}button.alt{background:#344665}button.good{background:#00a88c}button:disabled{opacity:.4;cursor:not-allowed}
+#editor{width:100%;max-height:370px;object-fit:contain;background:#fff;border-radius:9px;touch-action:pan-y;cursor:crosshair}
+.small{font-size:12px;color:#b9c5df}.status{color:#6de6db;font-weight:bold;font-size:13px}
+canvas#stage{width:100%;aspect-ratio:16/9;background:#f4f7ff;border-radius:13px;display:block}
+.controls{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}.slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}.slot{background:#111b31;padding:9px;border-radius:10px}.slot b{display:block;font-size:13px;margin-bottom:6px}
+.progress{height:7px;background:#344665;border-radius:10px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:#47dfcf}
+@media(max-width:900px){main{grid-template-columns:1fr}header,main,footer{padding:14px}}
+</style></head>
 <body>
-<header><h1>🎭 Cartoon Head Puzzle Studio</h1><p>4 ta qahramon rasmini yuklang — boshlar aralashib, o‘z tanasini topadigan animatsion puzzle video yarating.</p></header>
+<header><h1>🎭 Cartoon Head Puzzle Studio</h1><p>4 ta qahramonni yuklang, har bir boshning chetini belgilang. So‘ng boshlar tanalarni bittadan tekshirib, o‘z joyini topadi.</p></header>
 <main>
 <section class="panel">
 <h2>1. Qahramon rasmlari</h2>
-<div class="upload-grid" id="uploads"></div>
-<div class="controls">
-<div class="field"><label>Video davomiyligi <b id="durVal">20 soniya</b></label><input id="duration" type="range" min="12" max="40" value="20" step="2"></div>
-<div class="field"><label>Aralashish tezligi</label><select id="speed"><option value="slow">Sekin va ravon</option><option value="normal" selected>O‘rtacha</option><option value="fast">Tez va sho‘x</option></select></div>
-<div class="field"><label>Fon ko‘rinishi</label><select id="background"><option value="stage">Yorqin 3D sahna</option><option value="space">Kosmik fon</option><option value="party">Bayramona fon</option></select></div>
+<div class="slots" id="slots"></div>
+<div class="step">
+<b>2. Bosh chegarasini belgilang</b>
+<p class="small">Rasm tanlangach, pastdagi rasm ustida boshning cheti bo‘ylab nuqtalarni bosing. Shlyapa, quloq va shoxlarni ham kontur ichiga oling. Kamida 5 nuqta qo‘ying, so‘ng “Kontur tugadi”ni bosing.</p>
+<canvas id="editor" width="600" height="600"></canvas>
+<div class="controls"><button id="finish" disabled>Kontur tugadi</button><button id="undo" class="alt" disabled>Oxirgi nuqtani bekor qilish</button><button id="clear" class="alt" disabled>Kontur tozalash</button></div>
+<div class="small" id="editStatus">Avval qahramon rasmini yuklang.</div>
 </div>
-<div class="actions">
-<button id="preview" class="secondary" disabled>▶ Ko‘rib chiqish</button>
-<button id="make" disabled>✨ Video yaratish</button>
-<button id="stop" class="secondary" disabled>To‘xtatish</button>
-<button id="export" class="green" disabled>⬇ WebM yuklash</button>
+<div class="step">
+<b>3. Puzzle animatsiyasi</b>
+<p class="small">Har bir bosh yuqoriga ko‘tariladi. Keyin 1-bosh 1–4-tanani tekshiradi; mosini topganda birikadi. Keyin 2-, 3- va 4-bosh ham xuddi shunday qiladi.</p>
+<label class="small">Davomiylik: <span id="durationText">28</span> soniya</label><br><input id="duration" type="range" min="20" max="48" value="28" step="2" style="width:100%">
+<div class="controls"><button id="play" disabled>▶ Ko‘rib chiqish</button><button id="stop" class="alt" disabled>To‘xtatish</button><button id="export" class="good" disabled>WebM video yuklash</button></div>
 </div>
-<details class="adjust">
-<summary>Bosh ajratish sozlamalari (har bir qahramon uchun)</summary>
-<p>Avtomatik boshlang‘ich kesim taxminiy. Agar bosh noto‘g‘ri kesilsa, “Yuqori chegara” va “Bosh balandligi” slayderlarini sozlang. Eng yaxshi natija uchun qahramon to‘liq ko‘rinadigan, foni sodda rasm yuklang.</p>
-<div id="adjustments"></div>
-</details>
-<p class="note">Tavsiya: 4 ta qahramonning to‘liq bo‘yli, old tomondan tushirilgan rasmlarini yuklang. Bosh kesimi har bir rasmda alohida sozlanadi. Video brauzer ichida yaratiladi; eksport WebM formatida.</p>
-<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="status" id="status">0/4 rasm yuklandi</div><div class="progress"><div class="bar" id="bar"></div></div>
 </section>
-<section class="stage-wrap">
-<div class="stage-head"><h2>2. Video ko‘rinishi</h2><span class="status" id="status">4 ta rasm kutilmoqda</span></div>
-<canvas id="screen" width="1920" height="1080"></canvas>
-<p class="note">Animatsiya ketma-ketligi: qahramonlar sahnaga chiqadi → boshlar yuqoriga ko‘tariladi → aralashadi → navbat bilan tanalarini topadi → yakuniy raqs. Musiqa va effektlar brauzerda sintez qilinadi.</p>
-</section>
-</main>
-<footer>Cartoon Head Puzzle Studio · GitHub Pages uchun bitta HTML fayl. AI servis yoki server talab qilmaydi; bosh kesimi foydalanuvchi sozlamalariga tayanadi.</footer>
+<section class="panel">
+<h2>Video ko‘rinishi — 16:9</h2>
+<canvas id="stage" width="1920" height="1080"></canvas>
+<p class="small">Tekshiruv ketma-ketligi ko‘rinishi: bosh nomzod tanaga yaqinlashadi. Noto‘g‘ri tana ustida qisqa “×” belgisi chiqadi, to‘g‘ri tanada esa bosh joyiga mahkam birikadi.</p>
+</section></main>
+<footer class="small">Prototip: kontur foydalanuvchi tomonidan chiziladi, shu sababli oddiy oval kesimga qaraganda aniqroq ajratish mumkin. Eksport brauzer qo‘llasa WebM formatida.</footer>
 <script>
-const N=4, W=1920,H=1080, canvas=document.getElementById('screen'),ctx=canvas.getContext('2d');
-const people=Array(N).fill(null), cfg=Array.from({length:N},()=>({top:0.04,height:0.30}));
-const uploads=document.getElementById('uploads'), adjustments=document.getElementById('adjustments');
-const statusEl=document.getElementById('status'),bar=document.getElementById('bar');
-let raf=0, recorder=null, chunks=[], audioCtx=null, musicNodes=[], exporting=false, startedAt=0, duration=20;
-const colors=['#ff6b8a','#54c8ff','#ffd166','#8be28b'];
-for(let i=0;i<N;i++){
- const box=document.createElement('div');box.className='slot';
- box.innerHTML=`<label>Qahramon ${i+1}</label><input type="file" accept="image/*" data-i="${i}"><img class="thumb" id="thumb${i}" alt="Rasm ko‘rinishi">`;
- uploads.appendChild(box);
- const row=document.createElement('div');row.className='adjust-row';
- row.innerHTML=`<div><label>Qahramon ${i+1} — yuqori chegara <span id="topv${i}">4%</span></label><input type="range" min="0" max="55" value="4" id="top${i}"></div><div><label>Bosh balandligi <span id="heightv${i}">30%</span></label><input type="range" min="12" max="55" value="30" id="height${i}"></div>`;
- adjustments.appendChild(row);
- ['top','height'].forEach(k=>document.getElementById(k+i).addEventListener('input',e=>{
-  cfg[i][k]=Number(e.target.value)/100;document.getElementById(k+'v'+i).textContent=e.target.value+'%';drawIdle();
- }));
-}
-uploads.addEventListener('change',e=>{
- if(e.target.type!=='file')return;const i=Number(e.target.dataset.i),f=e.target.files[0];if(!f)return;
- const url=URL.createObjectURL(f),img=new Image();img.onload=()=>{people[i]={img,url,name:f.name};document.getElementById('thumb'+i).src=url;updateReady();drawIdle();};img.src=url;
-});
-function updateReady(){let n=people.filter(Boolean).length;statusEl.textContent=n===4?'Barcha qahramonlar tayyor':`${n}/4 ta rasm yuklandi`;document.getElementById('preview').disabled=n!==4;document.getElementById('make').disabled=n!==4;}
-document.getElementById('duration').oninput=e=>{duration=+e.target.value;document.getElementById('durVal').textContent=duration+' soniya';};
-function cover(img,x,y,w,h){let s=Math.min(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);return {x:x+(w-dw)/2,y:y+(h-dh)/2,w:dw,h:dh};}
-function roundedRect(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();}
-function drawBackground(t){
- const mode=document.getElementById('background').value;
- let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,mode==='space'?'#10163e':mode==='party'?'#4b1b58':'#263f70');g.addColorStop(1,'#11172b');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
- for(let i=0;i<65;i++){let x=(i*317)%W,y=(i*197)%H;ctx.globalAlpha=.16+.12*Math.sin(t*2+i);ctx.fillStyle=mode==='party'?'#ffd166':'#b9e8ff';ctx.beginPath();ctx.arc(x,y,3+(i%4),0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;
- ctx.fillStyle='#ffffff12';ctx.fillRect(0,850,W,230);ctx.fillStyle='#ffffff30';ctx.fillRect(0,850,W,5);
-}
-function getLayout(i){let x=155+i*405;return {x,y:235,w:330,h:610};}
-function drawBody(i,alpha=1){
- const p=people[i],r=getLayout(i);if(!p)return;
- ctx.save();ctx.globalAlpha=alpha;
- // Original full character image, with a soft cover over the head area to simulate detached head.
- let fit=cover(p.img,r.x,r.y,r.w,r.h);
- let headY=fit.y+fit.h*cfg[i].top, headH=fit.h*cfg[i].height;
- ctx.fillStyle='#17233b';ctx.beginPath();ctx.ellipse(r.x+r.w/2,headY+headH*.48,headH*.60,headH*.62,0,0,Math.PI*2);ctx.fill();
- ctx.restore();
-}
-function drawHead(i,x,y,scale=1,alpha=1){
- const p=people[i],r=getLayout(i);if(!p)return;
- let fit=cover(p.img,r.x,r.y,r.w,r.h),sx=fit.x,sy=fit.y+fit.h*cfg[i].top,sw=fit.w,sh=fit.h*cfg[i].height;
- ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.scale(scale,scale);
- ctx.beginPath();ctx.ellipse(0,0,sw*.49,sh*.62,0,0,Math.PI*2);ctx.clip();
- ctx.drawImage(p.img,sx,sy,sw,sh,-sw/2,-sh/2,sw,sh);
- ctx.restore();
-}
-function drawIdle(){
- if(people.filter(Boolean).length!==4){ctx.fillStyle='#10182c';ctx.fillRect(0,0,W,H);ctx.fillStyle='#dce7ff';ctx.textAlign='center';ctx.font='bold 54px Arial';ctx.fillText('4 ta qahramon rasmini yuklang',W/2,H/2);ctx.font='28px Arial';ctx.fillStyle='#8fa4ca';ctx.fillText('Keyin animatsiyani ko‘rib chiqishingiz mumkin',W/2,H/2+58);return;}
- drawBackground(0);for(let i=0;i<N;i++){drawBody(i);let r=getLayout(i);drawHead(i,r.x+r.w/2,r.y+90);ctx.fillStyle='#fff';ctx.font='bold 28px Arial';ctx.textAlign='center';ctx.fillText('Qahramon '+(i+1),r.x+r.w/2,930);}
-}
-function ease(v){return v<.5?4*v*v*v:1-Math.pow(-2*v+2,3)/2;}
-function drawFrame(sec){
- const t=sec/duration;drawBackground(sec);
- const phase=t<.18?0:t<.42?1:t<.78?2:3;
- for(let i=0;i<N;i++)drawBody(i,1);
- const order=[2,0,3,1];
- for(let i=0;i<N;i++){
-  let r=getLayout(i),cx=r.x+r.w/2,headY=r.y+90;
-  if(phase===0){drawHead(i,cx,headY);continue;}
-  if(phase===1){let q=ease(Math.min(1,(t-.18)/.24));drawHead(i,cx,headY-q*280,1+q*.08);continue;}
-  if(phase===2){
-   let q=(t-.42)/.36,idx=order[i],angle=sec*(document.getElementById('speed').value==='fast'?2.3:document.getElementById('speed').value==='slow'?.9:1.5)+i*Math.PI/2;
-   let xx=W/2+Math.cos(angle)*470*(1-q*.25), yy=210+Math.sin(angle*1.2)*105;
-   drawHead(i,xx,yy,1.04);continue;
-  }
-  let q=ease(Math.min(1,(t-.78)/.22)),slot=order.indexOf(i),targetX=getLayout(i).x+getLayout(i).w/2,targetY=getLayout(i).y+90;
-  // Heads return to their own matching bodies in a staggered sequence.
-  let delay=slot*.12,local=Math.max(0,Math.min(1,(q-delay)/(1-delay)));
-  let orbitX=W/2+(i-1.5)*280,orbitY=210;
-  drawHead(i,orbitX+(targetX-orbitX)*ease(local),orbitY+(targetY-orbitY)*ease(local),1.04-.04*local);
+const N=4, names=['Ko‘k ajdarcha','Tulkicha','Panda','Sehrgar quyoncha'], imgs=Array(4).fill(null), polys=Array.from({length:4},()=>[]), heads=Array(4).fill(null), bodyCanvases=Array(4).fill(null);
+let current=0, done=Array(4).fill(false), raf=0, rec=null, chunks=[], audio=null, start=0, dur=28;
+const editor=document.getElementById('editor'), ec=editor.getContext('2d'), stage=document.getElementById('stage'), c=stage.getContext('2d');
+const slots=document.getElementById('slots'), status=document.getElementById('status'), bar=document.getElementById('bar');
+names.forEach((n,i)=>{let d=document.createElement('div');d.className='slot';d.innerHTML=`<b>${i+1}. ${n}</b><input type="file" accept="image/*" data-i="${i}"><button class="alt" data-select="${i}">Konturini tahrirlash</button><div class="small" id="state${i}">Rasm yuklanmagan</div>`;slots.appendChild(d);});
+slots.addEventListener('change',e=>{if(e.target.type!=='file')return;let i=+e.target.dataset.i,f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{imgs[i]=im;polys[i]=[];heads[i]=null;bodyCanvases[i]=null;document.getElementById('state'+i).textContent='Rasm yuklandi — kontur belgilang';select(i);update();};im.src=URL.createObjectURL(f);});
+slots.addEventListener('click',e=>{if(e.target.dataset.select!==undefined)select(+e.target.dataset.select);});
+function fitRect(im,w,h){let s=Math.min(w/im.width,h/im.height);return {x:(w-im.width*s)/2,y:(h-im.height*s)/2,w:im.width*s,h:im.height*s,s};}
+function select(i){current=i;drawEditor();document.getElementById('editStatus').textContent=imgs[i]?'Qahramon '+(i+1)+' konturini belgilang.':'Bu qahramon uchun avval rasm yuklang.';document.getElementById('finish').disabled=!imgs[i];document.getElementById('undo').disabled=false;document.getElementById('clear').disabled=false;}
+function drawEditor(){ec.clearRect(0,0,600,600);ec.fillStyle='#fff';ec.fillRect(0,0,600,600);let im=imgs[current];if(!im)return;let r=fitRect(im,600,600);ec.drawImage(im,r.x,r.y,r.w,r.h);let p=polys[current];if(p.length){ec.beginPath();p.forEach((pt,k)=>k?ec.lineTo(pt.x,pt.y):ec.moveTo(pt.x,pt.y));ec.strokeStyle='#ff2878';ec.lineWidth=4;ec.stroke();p.forEach(pt=>{ec.beginPath();ec.arc(pt.x,pt.y,6,0,Math.PI*2);ec.fillStyle='#ff2878';ec.fill();});}}
+editor.addEventListener('click',e=>{if(!imgs[current]||done[current])return;let b=editor.getBoundingClientRect(),x=(e.clientX-b.left)*600/b.width,y=(e.clientY-b.top)*600/b.height;polys[current].push({x,y});drawEditor();document.getElementById('editStatus').textContent=polys[current].length+' ta nuqta belgilandi.';});
+document.getElementById('undo').onclick=()=>{polys[current].pop();drawEditor();};
+document.getElementById('clear').onclick=()=>{polys[current]=[];done[current]=false;heads[current]=null;bodyCanvases[current]=null;drawEditor();update();};
+document.getElementById('finish').onclick=()=>{if(polys[current].length<5){alert('Bosh atrofida kamida 5 ta nuqta belgilang.');return;}cutHead(current);done[current]=true;document.getElementById('state'+current).textContent='Bosh konturi tayyor ✓';document.getElementById('editStatus').textContent='Bosh ajratildi. Keyingi qahramonni tanlang.';update();};
+function cutHead(i){
+ let im=imgs[i],r=fitRect(im,600,600),pts=polys[i].map(p=>({x:(p.x-r.x)/r.w*im.width,y:(p.y-r.y)/r.h*im.height}));
+ let minX=Math.max(0,Math.min(...pts.map(p=>p.x))),maxX=Math.min(im.width,Math.max(...pts.map(p=>p.x))),minY=Math.max(0,Math.min(...pts.map(p=>p.y))),maxY=Math.min(im.height,Math.max(...pts.map(p=>p.y)));
+ let pad=8;minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(im.width,maxX+pad);maxY=Math.min(im.height,maxY+pad);
+ let sx=minX,sy=minY,sw=maxX-minX,sh=maxY-minY,mask=document.createElement('canvas');mask.width=Math.ceil(sw);mask.height=Math.ceil(sh);let m=mask.getContext('2d');m.save();m.beginPath();pts.forEach((p,k)=>k?m.lineTo(p.x-sx,p.y-sy):m.moveTo(p.x-sx,p.y-sy));m.closePath();m.clip();m.drawImage(im,sx,sy,sw,sh,0,0,sw,sh);m.restore();heads[i]=mask;
+ let body=document.createElement('canvas');body.width=im.width;body.height=im.height;let b=body.getContext('2d');b.drawImage(im,0,0);b.save();b.beginPath();pts.forEach((p,k)=>k?b.lineTo(p.x,p.y):b.moveTo(p.x,p.y));b.closePath();b.fillStyle='#ffffff';b.fill();b.restore();bodyCanvases[i]=body;
+};
+function update(){let loaded=imgs.filter(Boolean).length,ready=done.filter(Boolean).length;status.textContent=`${loaded}/4 rasm yuklandi · ${ready}/4 bosh ajratildi`;document.getElementById('play').disabled=ready!==4;document.getElementById('export').disabled=ready!==4;drawIdle();}
+function layout(i){return {x:150+i*410,y:245,w:330,h:600};}
+function bg(){let g=c.createLinearGradient(0,0,0,1080);g.addColorStop(0,'#eaf2ff');g.addColorStop(1,'#b9c9e8');c.fillStyle=g;c.fillRect(0,0,1920,1080);c.fillStyle='#ffffff88';c.fillRect(0,850,1920,230);c.fillStyle='#fff';c.font='bold 48px Arial';c.textAlign='center';}
+function drawPerson(i,hideHead=false){let r=layout(i);c.drawImage(bodyCanvases[i],r.x,r.y,r.w,r.h);if(!hideHead)c.drawImage(heads[i],r.x+80,r.y+10,170,170);}
+function drawIdle(){bg();if(imgs.filter(Boolean).length===0){c.fillStyle='#26385b';c.font='bold 58px Arial';c.fillText('4 ta qahramon rasmini yuklang',960,530);return;}for(let i=0;i<4;i++){if(imgs[i]){if(done[i])drawPerson(i,false);else{let r=layout(i);c.drawImage(imgs[i],r.x,r.y,r.w,r.h);}}c.fillStyle='#233456';c.font='bold 27px Arial';c.fillText(names[i],layout(i).x+165,920);}}
+function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+function frame(sec){bg();let stage1=2,stage2=5,checkStart=7,per=(dur-checkStart)/10;
+ // all bodies first, with their head spaces blank
+ for(let i=0;i<4;i++){drawPerson(i,true);c.fillStyle='#233456';c.font='bold 24px Arial';c.fillText('Tana '+(i+1),layout(i).x+165,920);}
+ // heads rise and shuffle overhead
+ for(let i=0;i<4;i++){let r=layout(i),x=r.x+165,y=r.y+90;if(sec<stage1){c.drawImage(heads[i],x-80,y-70,160,160);}else if(sec<stage2){let q=ease((sec-stage1)/(stage2-stage1));let tx=960+(i-1.5)*190,ty=150+Math.sin(sec*3+i)*30;c.drawImage(heads[i],x-80,y-70-q*250,160,160);if(q>.9)c.drawImage(heads[i],tx-80,ty-80,160,160);}else if(sec<checkStart){let a=sec*1.7+i*Math.PI/2,xx=960+Math.cos(a)*300,yy=170+Math.sin(a)*65;c.drawImage(heads[i],xx-75,yy-75,150,150);}}
+ if(sec>=checkStart){
+  // one head at a time checks bodies in order; correct body index equals head index
+  let elapsed=sec-checkStart,headIndex=Math.min(3,Math.floor(elapsed/per/4)),within=elapsed-headIndex*per*4,bodyIndex=Math.min(3,Math.floor(within/per)),q=Math.min(1,(within-bodyIndex*per)/per);
+  // draw heads already matched
+  for(let i=0;i<headIndex;i++){let r=layout(i);c.drawImage(heads[i],r.x+80,r.y+5,170,170);c.fillStyle='#00a987';c.font='bold 24px Arial';c.fillText('MOS KELDI ✓',r.x+165,205);}
+  // active head travels to each candidate position, then snaps if matching
+  let r=layout(bodyIndex),targetX=r.x+165,targetY=r.y+90,fromX=960,fromY=170;
+  let x=fromX+(targetX-fromX)*ease(q),y=fromY+(targetY-fromY)*ease(q);
+  c.drawImage(heads[headIndex],x-85,y-85,170,170);
+  if(q>.72){c.fillStyle=bodyIndex===headIndex?'#00a987':'#e14d65';c.font='bold 52px Arial';c.fillText(bodyIndex===headIndex?'✓':'×',targetX+115,targetY);}
+  if(bodyIndex===headIndex&&q>.98){c.drawImage(heads[headIndex],targetX-85,targetY-85,170,170);}
+  if(sec>dur-1){for(let i=0;i<4;i++){let rr=layout(i);c.drawImage(heads[i],rr.x+80,rr.y+5,170,170);}c.fillStyle='#5d37dc';c.font='bold 54px Arial';c.fillText('HAMMA BOSHLAR O‘Z TANASINI TOPDI!',960,1020);}
  }
- if(t>.78){ctx.textAlign='center';ctx.font='bold 58px Arial';ctx.fillStyle='#fff';ctx.shadowColor='#35d6e8';ctx.shadowBlur=25;ctx.fillText('HAMMASI O‘Z JOYINI TOPDI!',W/2,1000);ctx.shadowBlur=0;}
 }
-function startAudio(){
- try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();let master=audioCtx.createGain();master.gain.value=.12;master.connect(audioCtx.destination);
- // Simple original synthesized upbeat arpeggio; no external music file required.
- let notes=[261.63,329.63,392,523.25,392,329.63,293.66,349.23];
- let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='triangle';osc.frequency.value=notes[0];gain.gain.value=.0;osc.connect(gain);gain.connect(master);osc.start();musicNodes=[osc,gain,master];
- let step=0;const tick=()=>{if(!audioCtx)return;osc.frequency.setTargetAtTime(notes[step++%notes.length],audioCtx.currentTime,.03);gain.gain.setTargetAtTime(.24,audioCtx.currentTime,.02);gain.gain.setTargetAtTime(.02,audioCtx.currentTime+.18,.08);};tick();window._musicTimer=setInterval(tick,240);
- }catch(e){}
-}
-function stopAudio(){if(window._musicTimer)clearInterval(window._musicTimer);if(audioCtx){audioCtx.close().catch(()=>{});audioCtx=null;}}
-function play(exportMode=false){
- cancelAnimationFrame(raf);duration=+document.getElementById('duration').value;startedAt=performance.now();
- if(exportMode){
-  const stream=canvas.captureStream(30);let audioStream=null;
-  try{let dest=audioCtx.createMediaStreamDestination();musicNodes[1].connect(dest);audioStream=dest.stream;}catch(e){}
-  if(audioStream)audioStream.getAudioTracks().forEach(tr=>stream.addTrack(tr));
-  chunks=[];try{recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9,opus'});}catch(e){recorder=new MediaRecorder(stream);}
-  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
-  recorder.onstop=()=>{let blob=new Blob(chunks,{type:'video/webm'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cartoon-head-puzzle.webm';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);statusEl.textContent='Video yuklab olindi';};
-  recorder.start();
- }
- document.getElementById('stop').disabled=false;document.getElementById('export').disabled=true;startAudio();
- function frame(now){let sec=(now-startedAt)/1000;drawFrame(Math.min(sec,duration));bar.style.width=Math.min(100,sec/duration*100)+'%';
-  if(sec<duration)raf=requestAnimationFrame(frame);else{stopAudio();document.getElementById('stop').disabled=true;document.getElementById('export').disabled=false;statusEl.textContent='Animatsiya tayyor';if(recorder&&recorder.state!=='inactive')recorder.stop();}
- }
- raf=requestAnimationFrame(frame);
-}
-document.getElementById('preview').onclick=()=>play(false);
-document.getElementById('make').onclick=()=>play(false);
-document.getElementById('stop').onclick=()=>{cancelAnimationFrame(raf);stopAudio();if(recorder&&recorder.state!=='inactive')recorder.stop();document.getElementById('stop').disabled=true;statusEl.textContent='To‘xtatildi';};
-document.getElementById('export').onclick=()=>play(true);
+function audioStart(){try{audio=new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type='triangle';o.frequency.value=392;g.gain.value=.045;o.connect(g);g.connect(audio.destination);o.start();window.osc=o;window.gain=g;window.tone=setInterval(()=>{if(!audio)return;o.frequency.setTargetAtTime([392,440,523,659,523,440][Math.floor(Math.random()*6)],audio.currentTime,.04);},240);}catch(e){}}
+function audioStop(){if(window.tone)clearInterval(window.tone);if(audio){audio.close();audio=null;}}
+function run(exporting=false){cancelAnimationFrame(raf);dur=+document.getElementById('duration').value;start=performance.now();audioStart();if(exporting){let stream=stage.captureStream(30);try{rec=new MediaRecorder(stream,{mimeType:'video/webm'});}catch(e){rec=new MediaRecorder(stream);}chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(chunks,{type:'video/webm'}));a.download='cartoon-head-puzzle.webm';a.click();};rec.start();}
+ document.getElementById('stop').disabled=false;function tick(now){let s=(now-start)/1000;frame(Math.min(s,dur));bar.style.width=Math.min(100,s/dur*100)+'%';if(s<dur)raf=requestAnimationFrame(tick);else{audioStop();document.getElementById('stop').disabled=true;if(rec&&rec.state!=='inactive')rec.stop();}}raf=requestAnimationFrame(tick);}
+document.getElementById('play').onclick=()=>run(false);document.getElementById('export').onclick=()=>run(true);document.getElementById('stop').onclick=()=>{cancelAnimationFrame(raf);audioStop();if(rec&&rec.state!=='inactive')rec.stop();document.getElementById('stop').disabled=true;};
+document.getElementById('duration').oninput=e=>document.getElementById('durationText').textContent=e.target.value;
 drawIdle();
-</script>
-</body></html>
+</script></body></html>
