@@ -1,180 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Music Video Editor</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anime AMV Motion Studio</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#090b14;color:#f5f3ff;font-family:Arial,sans-serif}
-button,input,select{font:inherit}
-.wrap{max-width:1200px;margin:auto;padding:22px}
-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #292f45;padding-bottom:20px}
-.logo{font-weight:900;font-size:21px;color:#ed75ff}
-.muted{color:#969bb2;font-size:13px}
-h1{font-size:34px} h2{font-size:19px}
-.panel{background:#141827;border:1px solid #292f45;border-radius:15px;padding:20px;margin:18px 0}
-button,.uploadlabel{border:0;border-radius:9px;padding:12px 18px;background:linear-gradient(100deg,#974ce0,#d45bea);color:white;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.secondary{background:#262b40;border:1px solid #41465f}
-input[type=file]{display:none}
-.upload{border:2px dashed #8050ad;background:#191a2b;padding:25px;text-align:center;border-radius:12px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.stat{background:#20253a;border-radius:10px;padding:15px}
-.stat strong{display:block;color:#ed8aff;font-size:25px;margin-bottom:5px}
-canvas{display:block;width:100%;height:100px;background:#0c1020;border-radius:9px}
-.preview{background:#070910;border:1px solid #39344c;border-radius:12px;min-height:350px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-#character{max-width:75%;max-height:330px;object-fit:contain;display:none;transition:transform .3s,opacity .3s}
-.placeholder{color:#73788e;text-align:center}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-select{background:#22273b;color:white;border:1px solid #454b64;border-radius:8px;padding:11px}
-.timeline{overflow-x:auto;background:#0b1020;border-radius:10px;padding:15px}
-.track{position:relative;height:80px;min-width:600px;background:#20243a;border-radius:8px;margin:12px 0}
-.beat{position:absolute;top:0;bottom:0;width:2px;background:#9e7aff;opacity:.6}
-.beat.major{background:#ff79e5;width:3px}
-.clip{position:absolute;top:17px;height:45px;min-width:12px;background:#913de0;border:1px solid #ef9bff;border-radius:6px;cursor:pointer}
-#playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;z-index:5;pointer-events:none}
-.status{color:#c6a3ff;margin-top:12px;line-height:1.6}
-#clipList{font-size:13px;line-height:2;color:#cdb7ff}
-footer{text-align:center;color:#70758a;padding:30px}
-@media(max-width:650px){.wrap{padding:12px}.grid{grid-template-columns:1fr}h1{font-size:28px}.preview{min-height:280px}}
-</style>
-</head>
+:root{--bg:#080a16;--panel:#11172b;--panel2:#171f38;--line:#2b365b;--pink:#ff4fa3;--cyan:#55eaff;--purple:#9c70ff;--txt:#f4f5ff;--muted:#aab4d4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#33315f 0,#0a0d1c 55%,#070912 100%);color:var(--txt);font:14px/1.45 system-ui,Arial}
+header{padding:18px 3%;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:clamp(20px,3vw,30px);margin:0;letter-spacing:.7px}h1 em{font-style:normal;color:var(--pink)}.tag{color:var(--muted);font-size:12px}
+main{width:min(1500px,96%);margin:18px auto;display:grid;grid-template-columns:310px minmax(350px,1fr) 280px;gap:14px}
+.panel{background:linear-gradient(160deg,#151b32,#0d1224);border:1px solid var(--line);border-radius:15px;padding:15px;box-shadow:0 12px 35px #0005;min-width:0}
+h2{font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.8px;color:#fff}
+h3{font-size:11px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin:17px 0 7px}
+label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}
+input[type=file],select,button{width:100%;border:1px solid var(--line);border-radius:9px;background:#0b1020;color:var(--txt);padding:9px;font:inherit}
+input[type=file]{font-size:11px}input[type=range]{width:100%;accent-color:var(--pink)}
+button{cursor:pointer;font-weight:700;transition:.15s}button:hover{filter:brightness(1.2)}button:disabled{opacity:.4;cursor:not-allowed}
+.primary{border:0;background:linear-gradient(90deg,#ff459e,#895cff);margin-top:10px}.secondary{background:#202a4a}.tiny{padding:7px;font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.center{display:flex;flex-direction:column;gap:12px}
+.preview{display:flex;align-items:center;flex-direction:column}
+#stage{width:min(100%,390px);aspect-ratio:9/16;background:radial-gradient(circle,#24284b,#060916 70%);border:1px solid #424d7b;border-radius:13px;overflow:hidden;position:relative}
+canvas{width:100%;height:100%;display:block}
+.controls{display:flex;gap:7px;width:min(100%,390px);margin-top:10px}.controls button{flex:1}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{padding:10px;background:#0a1021;border:1px solid var(--line);border-radius:10px}.metric b{display:block;color:var(--cyan);font-size:18px}.metric small{color:var(--muted);font-size:10px}
+.timeline{background:#090f20;border:1px solid var(--line);border-radius:10px;padding:10px;overflow:hidden}
+.ruler{height:18px;position:relative;color:var(--muted);font-size:10px;border-bottom:1px solid #34405f}
+.track{height:30px;margin-top:8px;border-radius:5px;background:linear-gradient(90deg,#fc4d9f,#8d65ff,#4ce5ed);position:relative;overflow:hidden}
+.marker{position:absolute;top:0;bottom:0;width:2px;background:white;opacity:.8}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:#ffe66d;z-index:2}
+.effect-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.effect{padding:8px;border:1px solid var(--line);border-radius:8px;background:#0b1123;font-size:11px}
+.effect input{accent-color:var(--pink)}
+.status{font-size:11px;color:var(--cyan);min-height:28px;margin-top:9px}
+.hint{font-size:11px;color:var(--muted);line-height:1.5}
+.pill{display:inline-block;padding:3px 7px;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:10px;margin:2px}
+@media(max-width:1100px){main{grid-template-columns:280px 1fr}.right{grid-column:1/-1}.right .effect-list{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:720px){main{grid-template-columns:1fr}.right{grid-column:auto}.right .effect-list{grid-template-columns:1fr 1fr}}
+</style></head>
 <body>
-<div class="wrap">
-<header><div class="logo">✦ AI MUSIC VIDEO EDITOR</div><div class="muted">CREATIVE WORKSPACE · V1.0</div></header>
-<h1>Create your own <span style="color:#e879f9">music edit.</span></h1>
-<p class="muted">Upload music, add characters and synchronize animations with beats.</p>
-<section class="panel">
-<h2>🎵 1. Music</h2>
-<div class="upload"><p>Upload your soundtrack</p><label class="uploadlabel" for="audioFile">Select Music</label><input type="file" id="audioFile" accept="audio/*"><p id="fileName" class="muted">No audio selected</p></div>
-<audio id="player" controls style="width:100%;margin-top:15px"></audio>
-<div class="controls"><button id="analyze">Analyze Beats</button></div>
-<div id="audioStatus" class="status">Waiting for music...</div>
-</section>
-<section class="panel"><h2>📊 2. Audio Analysis</h2><div class="grid">
-<div class="stat"><strong id="bpm">--</strong><span class="muted">Estimated BPM</span></div>
-<div class="stat"><strong id="beatCount">--</strong><span class="muted">Detected Beats</span></div>
-<div class="stat"><strong id="duration">--</strong><span class="muted">Duration</span></div>
-</div><canvas id="wave"></canvas></section>
-<section class="panel"><h2>🧍 3. Character Upload</h2>
-<div class="upload"><p>Upload your character image</p><label class="uploadlabel" for="imageFile">Select Character PNG / JPG</label><input type="file" id="imageFile" accept="image/png,image/jpeg,image/webp"><p id="imageName" class="muted">No character selected</p></div>
-<p class="muted">Transparent PNG images are recommended.</p></section>
-<section class="panel"><h2>🎬 4. Video Preview</h2>
-<div class="preview" id="preview"><div class="placeholder" id="placeholder"><div style="font-size:40px">✦</div>Upload a character to preview</div><img id="character" alt="Character preview"></div>
-<div class="controls"><button id="previewPlay">▶ Preview Animation</button><button id="previewStop" class="secondary">■ Stop</button></div>
-<p class="muted" id="previewStatus">Ready for animation.</p></section>
-<section class="panel"><h2>✨ 5. Animation Settings</h2>
-<p class="muted">Choose an effect for the selected character clip.</p>
-<div class="controls"><select id="effect"><option value="zoom">Zoom In</option><option value="zoomout">Zoom Out</option><option value="shake">Shake</option><option value="rotate">Rotation</option><option value="fade">Fade In</option><option value="bounce">Bounce</option><option value="pulse">Pulse</option></select><button id="addClip">＋ Add at Current Beat</button></div>
-<p class="muted">Select a beat on the timeline or move the music player to the desired time.</p><div id="clipList">No animation clips added.</div></section>
-<section class="panel"><h2>⏱ 6. Music Timeline</h2>
-<div class="muted">Purple lines = beats · Pink lines = every fourth beat · Colored blocks = animation clips</div>
-<div class="timeline"><div id="timeline" class="track"><div id="playhead"></div></div></div>
-<div class="controls"><button id="addCurrent" class="secondary">Add at Current Time</button><button id="clearClips" class="secondary">Clear Clips</button></div>
-<p id="timelineStatus" class="status">Analyze music to create your timeline.</p></section>
-<footer>AI MUSIC VIDEO EDITOR · BUILT WITH GITHUB</footer>
+<header><div><h1>ANIME <em>AMV</em> MOTION STUDIO</h1><div class="tag">Auto montage • Character motion effects • Beat sync</div></div><div><span class="pill">9:16</span><span class="pill">30 FPS</span><span class="pill">Anime edit</span></div></header>
+<main>
+<aside class="panel">
+<h2>Media & Auto Director</h2>
+<label>Personaj rasmi</label><input id="imageFile" type="file" accept="image/*">
+<label>Musiqa fayli</label><input id="audioFile" type="file" accept="audio/*">
+<label>Qo‘shimcha fon rasmi (ixtiyoriy)</label><input id="bgFile" type="file" accept="image/*">
+<h3>Auto director</h3>
+<label>Montaj uslubi</label><select id="style"><option value="hybrid">AMV Hybrid</option><option value="neon">Neon Rush</option><option value="dream">Dreamy Sakura</option><option value="dark">Dark Impact</option></select>
+<label>Effekt kuchi: <b id="powerLabel">75%</b></label><input id="power" type="range" min="10" max="100" value="75">
+<label>Beatga moslash</label><select id="beatMode"><option value="strong">Kuchli</option><option value="normal" selected>O‘rtacha</option><option value="soft">Yumshoq</option></select>
+<label>Davomiylik</label><select id="length"><option value="all">Butun musiqa</option><option value="30">30 soniya</option><option value="15">15 soniya</option></select>
+<div class="grid2"><button id="analyze" class="secondary">♫ Tahlil</button><button id="build" class="primary">✦ Auto edit</button></div>
+<h3>Character motion controls</h3>
+<label>Harakat amplitudasi <b id="motionLabel">60%</b></label><input id="motion" type="range" min="0" max="100" value="60">
+<div class="grid2"><button id="poseA" class="secondary tiny">Pose: sway</button><button id="poseB" class="secondary tiny">Pose: bounce</button></div>
+<h3>Export</h3><button id="export" class="primary">Export video (WebM)</button>
+<div class="status" id="status">Rasm va musiqa yuklang.</div>
+<p class="hint">Hozirgi versiya rasmdan yangi tana pozalarini AI bilan generatsiya qilmaydi. U personaj rasmini motion-graphics usulida jonlantiradi. Haqiqiy AI image-to-video uchun keyin API ulash kerak.</p>
+</aside>
+<section class="center">
+<div class="panel preview">
+<h2 style="width:min(100%,390px)">Live preview</h2>
+<div id="stage"><canvas id="screen" width="720" height="1280"></canvas></div>
+<div class="controls"><button id="play" class="secondary">▶ Play</button><button id="pause" class="secondary">Ⅱ Pause</button><button id="reset" class="secondary">↺ Reset</button></div>
 </div>
+<div class="panel">
+<h2>Audio analysis & timeline</h2>
+<div class="metrics"><div class="metric"><b id="bpm">—</b><small>Estimated BPM</small></div><div class="metric"><b id="beatCount">—</b><small>Beat markers</small></div><div class="metric"><b id="duration">—</b><small>Audio length</small></div></div>
+<h3>Auto edit timeline</h3><div class="timeline"><div class="ruler" id="ruler">0s</div><div class="track" id="track"><div class="playhead" id="head"></div></div></div>
+<p class="hint">Oq markerlar aniqlangan beat nuqtalari. Sariq chiziq preview vaqtini ko‘rsatadi.</p>
+</div>
+</section>
+<aside class="panel right">
+<h2>Visual effects</h2>
+<div class="effect-list" id="effects">
+<label class="effect"><input type="checkbox" data-fx="glow" checked> Neon glow</label>
+<label class="effect"><input type="checkbox" data-fx="particles" checked> Particles</label>
+<label class="effect"><input type="checkbox" data-fx="flash" checked> Beat flash</label>
+<label class="effect"><input type="checkbox" data-fx="shake" checked> Camera shake</label>
+<label class="effect"><input type="checkbox" data-fx="rgb" checked> RGB split</label>
+<label class="effect"><input type="checkbox" data-fx="rings" checked> Energy rings</label>
+<label class="effect"><input type="checkbox" data-fx="scan" > Scanlines</label>
+<label class="effect"><input type="checkbox" data-fx="vignette" checked> Vignette</label>
+</div>
+<h3>Camera</h3><label>Zoom amount</label><input id="zoom" type="range" min="0" max="30" value="12">
+<label>Rotation amount</label><input id="rotation" type="range" min="0" max="100" value="35">
+<h3>Output</h3><span class="pill">MP4: not built-in</span><span class="pill">WebM: supported</span>
+<p class="hint">WebM eksportini Chrome’da ishlating. Zarur bo‘lsa keyin MP4 ga aylantirish mumkin.</p>
+</aside>
+</main>
+<audio id="audio"></audio>
 <script>
-const $ = id => document.getElementById(id);
-const player = $("player");
-let audioFile=null, audioBuffer=null, beats=[];
-let imageURL=null, clips=[], duration=0, previewTimer=null;
-let selectedTime=0;
-function timeFormat(t){return Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");}
-$("audioFile").addEventListener("change",()=>{
- const f=$("audioFile").files[0];if(!f)return;
- audioFile=f;player.src=URL.createObjectURL(f);
- $("fileName").textContent=f.name;$("audioStatus").textContent="Music uploaded successfully.";
- beats=[];clips=[];$("bpm").textContent="--";$("beatCount").textContent="--";renderTimeline();
-});
-player.addEventListener("loadedmetadata",()=>{duration=player.duration;$("duration").textContent=timeFormat(duration);});
-$("imageFile").addEventListener("change",()=>{
- const f=$("imageFile").files[0];if(!f)return;
- if(imageURL)URL.revokeObjectURL(imageURL);imageURL=URL.createObjectURL(f);
- $("character").src=imageURL;$("character").style.display="block";
- $("placeholder").style.display="none";$("imageName").textContent=f.name;
- $("previewStatus").textContent="Character loaded successfully.";
-});
+const $=id=>document.getElementById(id), canvas=$('screen'),ctx=canvas.getContext('2d'),audio=$('audio');
+let charImg=null,bgImg=null,beats=[],audioDuration=0,ready=false,playing=false,elapsed=0,startClock=0,raf=0,recording=false, audioContext=null,mediaSource=null,dest=null;
+let pose='sway',particles=Array.from({length:110},()=>({x:Math.random(),y:Math.random(),r:1+Math.random()*3,v:.12+Math.random()*.65}));
+const colors={hybrid:['#ff4fa3','#52eaff'],neon:['#39f5ff','#ff43cb'],dream:['#ff9fe0','#b6a1ff'],dark:['#ff315f','#6d69ff']};
+function say(t){$('status').textContent=t}
+function fmt(t){return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')}
+function fx(name){return !!document.querySelector('[data-fx="'+name+'"]').checked}
+$('imageFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{charImg=im;draw(elapsed);say('Personaj rasmi yuklandi.')};im.src=URL.createObjectURL(f)};
+$('bgFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{bgImg=im;draw(elapsed);say('Fon rasmi yuklandi.')};im.src=URL.createObjectURL(f)};
+$('audioFile').onchange=e=>{let f=e.target.files[0];if(!f)return;audio.src=URL.createObjectURL(f);audio.load();say('Musiqa yuklandi. Tahlil qiling.')};
+$('power').oninput=e=>$('powerLabel').textContent=e.target.value+'%';$('motion').oninput=e=>$('motionLabel').textContent=e.target.value+'%';
+$('poseA').onclick=()=>{pose='sway';say('Sway motion tanlandi.')};$('poseB').onclick=()=>{pose='bounce';say('Bounce motion tanlandi.')};
 async function analyze(){
- if(!audioFile){$("audioStatus").textContent="Upload music first.";return;}
- const btn=$("analyze");btn.disabled=true;$("audioStatus").textContent="Analyzing audio...";
+ if(!audio.src){say('Avval musiqa yuklang.');return}
+ try{audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();let ab=await(await fetch(audio.src)).arrayBuffer(),buf=await audioContext.decodeAudioData(ab.slice(0));audioDuration=buf.duration;
+ let d=buf.getChannelData(0),sr=buf.sampleRate,step=Math.floor(sr*.04),env=[];
+ for(let i=0;i<d.length;i+=step){let n=Math.min(step,d.length-i),s=0;for(let j=0;j<n;j++)s+=d[i+j]*d[i+j];env.push(Math.sqrt(s/n))}
+ let sorted=[...env].sort((a,b)=>a-b),threshold=sorted[Math.floor(sorted.length*.78)]||.05;beats=[];let prev=-99;
+ for(let i=1;i<env.length-1;i++)if(env[i]>threshold&&env[i]>=env[i-1]&&env[i]>env[i+1]&&i-prev>7){beats.push(i*.04);prev=i}
+ if(beats.length<5){beats=[];for(let t=0;t<audioDuration;t+=.5)beats.push(t)}
+ let dif=[];for(let i=1;i<Math.min(beats.length,80);i++)dif.push(beats[i]-beats[i-1]);let avg=dif.length?dif.reduce((a,b)=>a+b,0)/dif.length:.5;
+ $('bpm').textContent=Math.round(60/avg);$('beatCount').textContent=beats.length;$('duration').textContent=fmt(audioDuration);renderTimeline();say('Audio tahlili tugadi. Endi Auto edit bosing.');
+ }catch(e){console.error(e);say('Audio tahlilida xatolik. MP3 yoki WAV faylini tekshiring.')}}
+function renderTimeline(){let tr=$('track');tr.querySelectorAll('.marker').forEach(x=>x.remove());beats.forEach(t=>{let m=document.createElement('i');m.className='marker';m.style.left=(t/audioDuration*100)+'%';tr.appendChild(m)});$('ruler').textContent='0s　　　　　　　　　'+fmt(audioDuration/2)+'　　　　　　　　　'+fmt(audioDuration)}
+function total(){let v=$('length').value;return v==='all'?audioDuration:Number(v)}
+function beatPulse(t){if(!beats.length)return 0;let d=Infinity;for(let b of beats){let x=Math.abs(t-b);if(x<d)d=x;if(b>t+.2)break}return Math.max(0,1-d/.13)}
+function draw(t){
+ let w=canvas.width,h=canvas.height,p=Number($('power').value)/100,m=Number($('motion').value)/100,z=Number($('zoom').value)/100,rot=Number($('rotation').value)/100,style=$('style').value,c=colors[style],pulse=beatPulse(t),mode=$('beatMode').value,beatGain=mode==='strong'?1:mode==='normal'?.65:.35;
+ ctx.clearRect(0,0,w,h);
+ let bg=ctx.createRadialGradient(w*.5,h*.45,10,w*.5,h*.5,h*.8);bg.addColorStop(0,style==='dark'?'#34213e':'#29284f');bg.addColorStop(1,'#050713');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+ if(bgImg){ctx.globalAlpha=.4;cover(bgImg,0,0,w,h);ctx.globalAlpha=1}
+ // particles behind character
+ if(fx('particles')){for(let q of particles){let yy=(q.y-t*q.v*.055)%1;if(yy<0)yy+=1;ctx.globalAlpha=.35;ctx.fillStyle=c[1];ctx.beginPath();ctx.arc(q.x*w,yy*h,q.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
+ let motionAmt=m*p, sway=pose==='sway'?Math.sin(t*2.2)*.025*motionAmt:Math.sin(t*5)*.035*motionAmt;
+ let bounce=pose==='bounce'?Math.abs(Math.sin(t*4))*35*motionAmt:Math.sin(t*2)*12*motionAmt;
+ let shake=fx('shake')?pulse*18*p*beatGain:0,zoom=1+z*p*(.5+.5*Math.sin(t*1.5))+pulse*.11*beatGain*p;
+ if(charImg){let scale=Math.min(w*.93/charImg.width,h*.76/charImg.height),cw=charImg.width*scale,ch=charImg.height*scale;
+ ctx.save();ctx.translate(w/2+(Math.random()-.5)*shake,h*.51+bounce);ctx.rotate(sway+Math.sin(t*.8)*.012*rot);ctx.scale(zoom,zoom);
+ if(fx('glow')){ctx.shadowColor=c[0];ctx.shadowBlur=42*p}
+ if(fx('rgb')&&pulse>.25){ctx.globalAlpha=.28;ctx.drawImage(charImg,-cw/2-7,-ch/2+25,cw,ch);ctx.globalAlpha=1}
+ ctx.drawImage(charImg,-cw/2,-ch/2+25,cw,ch);ctx.restore();
+ }else{ctx.fillStyle='#b5bad5';ctx.font='28px Arial';ctx.textAlign='center';ctx.fillText('UPLOAD CHARACTER IMAGE',w/2,h/2)}
+ // energy rings
+ if(fx('rings')){ctx.save();ctx.globalCompositeOperation='screen';for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(w/2,h*.53,190+i*60+pulse*28,280+i*75+pulse*28,t*.12,0,Math.PI*2);ctx.strokeStyle=c[i%2];ctx.globalAlpha=.16*p;ctx.lineWidth=3;ctx.stroke()}ctx.restore()}
+ if(fx('flash')&&pulse>.75){ctx.fillStyle=c[0];ctx.globalAlpha=(pulse-.75)*.55*p;ctx.fillRect(0,0,w,h);ctx.globalAlpha=1}
+ if(fx('scan')){ctx.fillStyle='#fff';ctx.globalAlpha=.07;for(let y=0;y<h;y+=8)ctx.fillRect(0,y,w,1);ctx.globalAlpha=1}
+ if(fx('vignette')){let v=ctx.createRadialGradient(w/2,h/2,h*.25,w/2,h/2,h*.8);v.addColorStop(0,'transparent');v.addColorStop(1,'#02030bdc');ctx.fillStyle=v;ctx.fillRect(0,0,w,h)}
+ ctx.fillStyle='#fff';ctx.font='bold 25px Arial';ctx.textAlign='left';ctx.fillText('AMV MOTION',28,50);
+ ctx.fillStyle=c[1];ctx.fillRect(28,h-34,(w-56)*Math.min(1,t/(total()||1)),4);
+}
+function cover(img,x,y,w,h){let r=Math.max(w/img.width,h/img.height),iw=img.width*r,ih=img.height*r;ctx.drawImage(img,x+(w-iw)/2,y+(h-ih)/2,iw,ih)}
+function tick(now){if(!playing)return;elapsed=(now-startClock)/1000;if(elapsed>=total()){pause();return}draw(elapsed);$('head').style.left=(elapsed/(audioDuration||1)*100)+'%';raf=requestAnimationFrame(tick)}
+function play(){if(!ready){say('Avval rasm, musiqa, tahlil va Auto edit kerak.');return}playing=true;startClock=performance.now()-elapsed*1000;audio.currentTime=elapsed;audio.play().catch(()=>{});audioContext?.resume();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick)}
+function pause(){playing=false;audio.pause();cancelAnimationFrame(raf)}
+$('analyze').onclick=analyze;
+$('build').onclick=()=>{if(!charImg||!audio.src||!beats.length){say('Personaj va musiqa yuklang, so‘ng tahlil qiling.');return}ready=true;elapsed=0;draw(0);say('Auto edit tayyor. Play tugmasini bosing.')};
+$('play').onclick=play;$('pause').onclick=()=>{pause();say('Preview pauza qilindi.')};$('reset').onclick=()=>{pause();elapsed=0;audio.currentTime=0;draw(0);$('head').style.left='0%'};
+$('export').onclick=async()=>{
+ if(!ready){say('Avval Auto edit yarating.');return}
+ if(!canvas.captureStream||!window.MediaRecorder){say('Chrome brauzerida ochib ko‘ring: video eksport qo‘llanmayapti.');return}
  try{
-  const AC=window.AudioContext||window.webkitAudioContext;const ctx=new AC();
-  const data=await audioFile.arrayBuffer();audioBuffer=await ctx.decodeAudioData(data);
-  duration=audioBuffer.duration;const sr=audioBuffer.sampleRate,n=audioBuffer.length;
-  const mono=new Float32Array(n);
-  for(let c=0;c<audioBuffer.numberOfChannels;c++){const ch=audioBuffer.getChannelData(c);for(let i=0;i<n;i++)mono[i]+=ch[i]/audioBuffer.numberOfChannels;}
-  const frame=1024,hop=512,env=[];
-  for(let s=0;s+frame<=n;s+=hop){let sum=0;for(let j=0;j<frame;j++)sum+=mono[s+j]**2;env.push(Math.sqrt(sum/frame));}
-  const onset=env.map((v,i)=>i?Math.max(0,v-env[i-1]):0);
-  const avg=onset.reduce((a,b)=>a+b,0)/onset.length;const sig=onset.map(v=>v-avg);const rate=sr/hop;
-  const min=Math.floor(rate*60/180),max=Math.ceil(rate*60/70);let best=0,scoreBest=-Infinity;
-  for(let lag=min;lag<=max;lag++){let score=0;for(let i=lag;i<sig.length;i++)score+=sig[i]*sig[i-lag];if(score>scoreBest){scoreBest=score;best=lag;}}
-  if(!best||scoreBest<=0)throw Error("No clear rhythm detected.");
-  let bpm=60*rate/best;while(bpm<70)bpm*=2;while(bpm>180)bpm/=2;
-  let phaseBest=0,phaseScore=-Infinity;
-  for(let p=0;p<best;p++){let score=0;for(let i=p;i<sig.length;i+=best)score+=sig[i];if(score>phaseScore){phaseScore=score;phaseBest=p;}}
-  beats=[];for(let i=phaseBest;i<sig.length;i+=best){const t=i*hop/sr;if(t<=duration)beats.push(t);}
-  $("bpm").textContent=Math.round(bpm);$("beatCount").textContent=beats.length;
-  $("duration").textContent=timeFormat(duration);$("audioStatus").textContent="Analysis complete. Timeline generated.";
-  drawWave(env);renderTimeline();await ctx.close();
- }catch(e){$("audioStatus").textContent="Error: "+e.message;}
- finally{btn.disabled=false;}
-}
-$("analyze").addEventListener("click",analyze);
-function drawWave(data){
- const c=$("wave"),r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=r.width*d;c.height=100*d;
- const x=c.getContext("2d");x.setTransform(d,0,0,d,0,0);const step=Math.max(1,Math.floor(data.length/r.width));
- for(let i=0;i<r.width;i++){const h=Math.max(2,(data[i*step]||0)*85);x.fillStyle="#bd69f5";x.fillRect(i,50-h/2,2,h);}
-}
-function renderTimeline(){
- const track=$("timeline");track.querySelectorAll(".beat,.clip").forEach(e=>e.remove());if(!duration)return;
- track.style.width="100%";track.style.minWidth=Math.max(600,duration*35)+"px";
- beats.forEach((t,i)=>{
-  const mark=document.createElement("div");mark.className="beat"+(i%4===0?" major":"");
-  mark.style.left=(t/duration*100)+"%";mark.title="Beat "+(i+1)+" — "+t.toFixed(2)+" sec";
-  mark.addEventListener("click",()=>{selectedTime=t;player.currentTime=t;$("timelineStatus").textContent="Selected beat "+(i+1)+" at "+t.toFixed(2)+" seconds.";});
-  track.appendChild(mark);
- });
- clips.forEach((clip,i)=>{
-  const el=document.createElement("div");el.className="clip";el.style.left=(clip.time/duration*100)+"%";
-  el.style.width=Math.max(2,clip.length/duration*100)+"%";el.title=clip.effect+" at "+clip.time.toFixed(2)+" sec";
-  el.addEventListener("click",()=>{selectedTime=clip.time;player.currentTime=clip.time;$("timelineStatus").textContent="Selected clip: "+clip.effect;});
-  track.appendChild(el);
- });
- updatePlayhead();$("timelineStatus").textContent=beats.length+" beats · "+clips.length+" animation clips";
- $("clipList").textContent=clips.length?clips.map((c,i)=>"Clip "+(i+1)+" — "+c.effect+" — "+c.time.toFixed(2)+" sec").join("\n"):"No animation clips added.";
-}
-function addClip(){
- if(!audioBuffer){$("timelineStatus").textContent="Analyze music first.";return;}
- if(!$("character").src){$("timelineStatus").textContent="Upload a character first.";return;}
- const time=player.currentTime||selectedTime;clips.push({time,effect:$("effect").value,length:0.5});
- clips.sort((a,b)=>a.time-b.time);renderTimeline();$("timelineStatus").textContent="Animation added at "+time.toFixed(2)+" sec.";
-}
-$("addClip").addEventListener("click",addClip);$("addCurrent").addEventListener("click",addClip);
-$("clearClips").addEventListener("click",()=>{clips=[];renderTimeline();});
-function updatePlayhead(){if(!duration)return;$("playhead").style.left=(player.currentTime/duration*100)+"%";}
-player.addEventListener("timeupdate",updatePlayhead);
-function stopPreview(){if(previewTimer)cancelAnimationFrame(previewTimer);previewTimer=null;$("character").style.transform="none";$("character").style.opacity="1";$("previewStatus").textContent="Preview stopped.";}
-function preview(){
- if(!$("character").src){$("previewStatus").textContent="Upload a character first.";return;}
- stopPreview();const start=performance.now();const selected=clips.filter(c=>c.time<=player.currentTime+0.01);
- const clip=selected[selected.length-1]||clips[0];const effect=clip?clip.effect:$("effect").value;
- $("previewStatus").textContent="Preview effect: "+effect;
- function frame(now){const t=(now-start)/1000,pulse=Math.sin(t*7),el=$("character");
-  if(effect==="zoom")el.style.transform=`scale(${1+Math.min(t,1)*0.6})`;
-  else if(effect==="zoomout")el.style.transform=`scale(${1.5-Math.min(t,1)*0.5})`;
-  else if(effect==="shake")el.style.transform=`translateX(${pulse*9}px)`;
-  else if(effect==="rotate")el.style.transform=`rotate(${pulse*8}deg)`;
-  else if(effect==="fade")el.style.opacity=Math.min(1,t*2);
-  else if(effect==="bounce")el.style.transform=`translateY(${-Math.abs(pulse)*25}px)`;
-  else if(effect==="pulse")el.style.transform=`scale(${1+pulse*.08})`;
-  previewTimer=requestAnimationFrame(frame);
- }
- previewTimer=requestAnimationFrame(frame);
-}
-$("previewPlay").addEventListener("click",preview);$("previewStop").addEventListener("click",stopPreview);
-</script>
-</body>
-</html>
+ pause();elapsed=0;audio.currentTime=0;
+ const stream=canvas.captureStream(30);
+ if(!audioContext)audioContext=new(window.AudioContext||window.webkitAudioContext)();
+ if(!mediaSource){mediaSource=audioContext.createMediaElementSource(audio);dest=audioContext.createMediaStreamDestination();mediaSource.connect(audioContext.destination);mediaSource.connect(dest)}
+ dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+ let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';
+ let rec=new MediaRecorder(stream,{mimeType:mime}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+ rec.onstop=()=>{let u=URL.createObjectURL(new Blob(chunks,{type:'video/webm'})),a=document.createElement('a');a.href=u;a.download='anime-amv-motion.webm';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);say('Eksport tugadi: anime-amv-motion.webm')};
+ rec.start();await audioContext.resume();audio.currentTime=0;await audio.play();let begin=performance.now(),len=total();say('Video yozilmoqda. Jarayon tugaguncha sahifani yopmang.');
+ function frame(now){let t=(now-begin)/1000;draw(t);$('head').style.left=(t/(audioDuration||1)*100)+'%';if(t<len)requestAnimationFrame(frame);else{audio.pause();rec.stop()}}requestAnimationFrame(frame);
+ }catch(e){console.error(e);say('Eksportda xatolik yuz berdi. Chrome’da qayta urinib ko‘ring.')}
+};
+draw(0);
+</script></body></html>
