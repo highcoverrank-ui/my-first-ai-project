@@ -308,6 +308,10 @@ function headState(h,t){
   }
  }
 }
+function markY(h,st){
+ const sw=sched.slotW,gb=geo(chars[sched.slotChar[st.slot]],sw),gh=geo(chars[h.c],sw);
+ return Math.max(170,GROUND-gb.bodyH-gh.hp*gh.s-85);
+}
 function drawQuestion(x,y,pop,alpha){
  ctx.save();ctx.translate(x,y);ctx.scale(pop,pop);ctx.globalAlpha=alpha;
  ctx.shadowColor='#ffd84d';ctx.shadowBlur=26;ctx.beginPath();ctx.arc(0,0,66,0,Math.PI*2);ctx.fillStyle='rgba(255,190,40,.95)';ctx.fill();
@@ -481,12 +485,12 @@ function draw(t){
    if(st.ok&&t>=st.tv)solved++;
    if(t>=st.t1&&t<st.tv){
     const g=geo(chars[sched.slotChar[st.slot]],sw),pu=1+.08*Math.sin(t*10);
-    drawQuestion(sw*(st.slot+.5),GROUND-g.bodyH*.55,pu,Math.min(1,(t-st.t1)/.15));
+    drawQuestion(sw*(st.slot+.5),markY(h,st),pu,Math.min(1,(t-st.t1)/.15));
    }
    if(t>=st.tv&&t<st.t2){
     const age=t-st.tv,g=geo(chars[sched.slotChar[st.slot]],sw);
     const pop=Math.max(.01,easeOutBack(Math.min(1,age/.28))),fade=Math.min(1,(st.t2-t)/.2);
-    drawMark(sw*(st.slot+.5),GROUND-g.bodyH*.55,st.ok,pop,fade);
+    drawMark(sw*(st.slot+.5),markY(h,st),st.ok,pop,fade);
    }
   }
   const last=h.steps[h.steps.length-1];
