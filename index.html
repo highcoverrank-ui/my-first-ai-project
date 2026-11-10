@@ -1,12 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AI Music Studio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Music Studio</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#090b14;color:#fff;
+ font-family:Arial,sans-serif;padding:30px;
+}
+.container{max-width:1050px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:25px;font-weight:bold;color:#f17bff}
+.tag{color:#aaa;font-size:13px}
+.hero{margin-top:55px}
+h1{font-size:38px;margin-bottom:10px}
+h1 span{color:#d879ff}
+p{color:#aaa;line-height:1.6}
+.panel{
+ background:#141725;border:1px solid #292d42;
+ border-radius:18px;padding:25px;margin-top:25px;
+}
+.upload{
+ border:2px dashed #8d60bc;border-radius:15px;
+ padding:35px;text-align:center;background:#1b1d30;
+}
+.upload label{
+ display:inline-block;background:#a34ce5;
+ padding:13px 25px;border-radius:9px;
+ cursor:pointer;font-weight:bold;
+}
+input[type=file]{display:none}
+audio{width:100%;margin-top:20px}
+button{
+ border:0;background:#a34ce5;color:white;
+ padding:13px 22px;border-radius:9px;
+ cursor:pointer;font-size:15px;font-weight:bold;
+}
+button:hover{background:#c06aff}
+.stats{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:15px;margin-top:20px;
+}
+.stat{background:#1c2031;padding:20px;border-radius:12px}
+.stat strong{display:block;font-size:25px;color:#e18aff}
+.stat small{color:#aaa}
+.wave{
+ height:100px;display:flex;align-items:center;
+ justify-content:center;gap:4px;overflow:hidden;
+}
+.wave i{
+ display:block;width:5px;border-radius:5px;
+ background:linear-gradient(#f27bff,#7254e8);
+}
+.status{color:#bfa1ff;margin-top:15px}
+footer{text-align:center;color:#666;margin:45px 0 10px}
+@media(max-width:600px){
+ body{padding:16px}
+ h1{font-size:29px}
+ .stats{grid-template-columns:1fr}
+ header{gap:10px;flex-wrap:wrap}
+}
+</style>
 </head>
 <body>
-    <h1>My AI Music Studio</h1>
-    <p>Welcome to my first AI project!</p>
+<div class="container">
+
+<header>
+ <div class="logo">✦ AI MUSIC STUDIO</div>
+ <div class="tag">CREATIVE AUDIO WORKSPACE</div>
+</header>
+
+<section class="hero">
+ <div class="tag">YOUR PERSONAL MUSIC EDITOR</div>
+ <h1>Create edits that <span>feel the beat.</span></h1>
+ <p>Upload your music and prepare it for professional
+ music-synchronized video editing.</p>
+</section>
+
+<div class="panel">
+ <h2>🎵 Upload your music</h2>
+ <div class="upload">
+  <p>Choose an MP3 or WAV audio file</p>
+  <label for="audioFile">＋ Select Music</label>
+  <input id="audioFile" type="file" accept="audio/*">
+  <p id="fileName">No music selected</p>
+ </div>
+
+ <audio id="player" controls></audio>
+
+ <div class="wave" id="wave"></div>
+
+ <button id="analyze">Analyze Track</button>
+ <div class="status" id="status">Waiting for audio...</div>
+</div>
+
+<div class="panel">
+ <h2>Track Information</h2>
+ <div class="stats">
+  <div class="stat">
+   <strong id="duration">--</strong>
+   <small>Duration</small>
+  </div>
+  <div class="stat">
+   <strong id="format">--</strong>
+   <small>Audio format</small>
+  </div>
+  <div class="stat">
+   <strong id="size">--</strong>
+   <small>File size</small>
+  </div>
+ </div>
+</div>
+
+<div class="panel">
+ <h2>✦ Music Analysis</h2>
+ <p>Next step: beat detection, BPM estimation,
+ rhythm mapping and animation synchronization.</p>
+ <div class="stats">
+  <div class="stat"><strong>--</strong><small>BPM</small></div>
+  <div class="stat"><strong>--</strong><small>Beats</small></div>
+  <div class="stat"><strong>--</strong><small>Sections</small></div>
+ </div>
+</div>
+
+<footer>AI MUSIC STUDIO · YOUR CREATIVE SPACE</footer>
+</div>
+
+<script>
+const input=document.getElementById('audioFile');
+const player=document.getElementById('player');
+const statusText=document.getElementById('status');
+
+input.addEventListener('change',()=>{
+ const file=input.files[0];
+ if(!file)return;
+
+ player.src=URL.createObjectURL(file);
+ document.getElementById('fileName').textContent=file.name;document.getElementById('format').textContent=
+  file.name.split('.').pop().toUpperCase();
+ document.getElementById('size').textContent=
+  (file.size/1024/1024).toFixed(2)+' MB';
+ document.getElementById('duration').textContent='Loading...';
+ statusText.textContent='Music uploaded successfully!';
+});
+
+player.addEventListener('loadedmetadata',()=>{
+ const minutes=Math.floor(player.duration/60);
+ const seconds=Math.floor(player.duration%60);
+ document.getElementById('duration').textContent=
+  minutes+':'+String(seconds).padStart(2,'0');
+});
+
+document.getElementById('analyze').addEventListener('click',()=>{
+ if(!player.src){
+  statusText.textContent='Please upload music first.';
+  return;
+ }
+ statusText.textContent=
+  'Track loaded! Basic audio information is ready. Beat analysis is our next development step.';
+});
+
+const wave=document.getElementById('wave');
+for(let i=0;i<100;i++){
+ const bar=document.createElement('i');
+ bar.style.height=(15+Math.random()*75)+'px';
+ wave.appendChild(bar);
+}
+</script>
 </body>
 </html>
