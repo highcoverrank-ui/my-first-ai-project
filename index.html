@@ -1,169 +1,96 @@
 <!doctype html>
-<html lang="uz">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Anime AMV Motion Studio</title>
+<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anime AMV Video Studio</title>
 <style>
-:root{--bg:#080a16;--panel:#11172b;--panel2:#171f38;--line:#2b365b;--pink:#ff4fa3;--cyan:#55eaff;--purple:#9c70ff;--txt:#f4f5ff;--muted:#aab4d4}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#33315f 0,#0a0d1c 55%,#070912 100%);color:var(--txt);font:14px/1.45 system-ui,Arial}
-header{padding:18px 3%;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-h1{font-size:clamp(20px,3vw,30px);margin:0;letter-spacing:.7px}h1 em{font-style:normal;color:var(--pink)}.tag{color:var(--muted);font-size:12px}
-main{width:min(1500px,96%);margin:18px auto;display:grid;grid-template-columns:310px minmax(350px,1fr) 280px;gap:14px}
-.panel{background:linear-gradient(160deg,#151b32,#0d1224);border:1px solid var(--line);border-radius:15px;padding:15px;box-shadow:0 12px 35px #0005;min-width:0}
-h2{font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.8px;color:#fff}
-h3{font-size:11px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin:17px 0 7px}
-label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}
-input[type=file],select,button{width:100%;border:1px solid var(--line);border-radius:9px;background:#0b1020;color:var(--txt);padding:9px;font:inherit}
-input[type=file]{font-size:11px}input[type=range]{width:100%;accent-color:var(--pink)}
-button{cursor:pointer;font-weight:700;transition:.15s}button:hover{filter:brightness(1.2)}button:disabled{opacity:.4;cursor:not-allowed}
-.primary{border:0;background:linear-gradient(90deg,#ff459e,#895cff);margin-top:10px}.secondary{background:#202a4a}.tiny{padding:7px;font-size:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.center{display:flex;flex-direction:column;gap:12px}
-.preview{display:flex;align-items:center;flex-direction:column}
-#stage{width:min(100%,390px);aspect-ratio:9/16;background:radial-gradient(circle,#24284b,#060916 70%);border:1px solid #424d7b;border-radius:13px;overflow:hidden;position:relative}
-canvas{width:100%;height:100%;display:block}
-.controls{display:flex;gap:7px;width:min(100%,390px);margin-top:10px}.controls button{flex:1}
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{padding:10px;background:#0a1021;border:1px solid var(--line);border-radius:10px}.metric b{display:block;color:var(--cyan);font-size:18px}.metric small{color:var(--muted);font-size:10px}
-.timeline{background:#090f20;border:1px solid var(--line);border-radius:10px;padding:10px;overflow:hidden}
-.ruler{height:18px;position:relative;color:var(--muted);font-size:10px;border-bottom:1px solid #34405f}
-.track{height:30px;margin-top:8px;border-radius:5px;background:linear-gradient(90deg,#fc4d9f,#8d65ff,#4ce5ed);position:relative;overflow:hidden}
-.marker{position:absolute;top:0;bottom:0;width:2px;background:white;opacity:.8}
-.playhead{position:absolute;top:0;bottom:0;width:2px;background:#ffe66d;z-index:2}
-.effect-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.effect{padding:8px;border:1px solid var(--line);border-radius:8px;background:#0b1123;font-size:11px}
-.effect input{accent-color:var(--pink)}
-.status{font-size:11px;color:var(--cyan);min-height:28px;margin-top:9px}
-.hint{font-size:11px;color:var(--muted);line-height:1.5}
-.pill{display:inline-block;padding:3px 7px;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:10px;margin:2px}
-@media(max-width:1100px){main{grid-template-columns:280px 1fr}.right{grid-column:1/-1}.right .effect-list{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:720px){main{grid-template-columns:1fr}.right{grid-column:auto}.right .effect-list{grid-template-columns:1fr 1fr}}
-</style></head>
-<body>
-<header><div><h1>ANIME <em>AMV</em> MOTION STUDIO</h1><div class="tag">Auto montage • Character motion effects • Beat sync</div></div><div><span class="pill">9:16</span><span class="pill">30 FPS</span><span class="pill">Anime edit</span></div></header>
+:root{--bg:#080a16;--p:#12182d;--line:#2b365b;--pink:#ff4fa3;--cyan:#55eaff;--txt:#f4f5ff;--muted:#aab4d4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#34315f,#090c19 55%,#060811);color:var(--txt);font:14px/1.45 system-ui,Arial}
+header{padding:18px 3%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{margin:0;font-size:clamp(20px,3vw,30px)}h1 em{font-style:normal;color:var(--pink)}.muted{color:var(--muted);font-size:12px}
+main{width:min(1450px,96%);margin:18px auto;display:grid;grid-template-columns:290px 1fr 270px;gap:14px}.panel{background:linear-gradient(160deg,#151b32,#0c1122);border:1px solid var(--line);border-radius:15px;padding:15px;min-width:0;box-shadow:0 12px 35px #0005}
+h2{font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.7px}h3{font-size:11px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin:17px 0 7px}
+label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}input[type=file],select,button{width:100%;border:1px solid var(--line);border-radius:9px;background:#0b1020;color:var(--txt);padding:9px;font:inherit}input[type=file]{font-size:11px}input[type=range]{width:100%;accent-color:var(--pink)}
+button{cursor:pointer;font-weight:700}.primary{background:linear-gradient(90deg,#ff459e,#895cff);border:0;margin-top:10px}.secondary{background:#202a4a}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.center{display:flex;flex-direction:column;gap:12px}.preview{display:flex;flex-direction:column;align-items:center}
+#stage{width:min(100%,430px);aspect-ratio:9/16;background:radial-gradient(circle,#272b50,#050713 72%);border:1px solid #424d7b;border-radius:13px;overflow:hidden;position:relative}
+canvas{width:100%;height:100%;display:block}.controls{display:flex;gap:7px;width:min(100%,430px);margin-top:10px}.controls button{flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px;background:#0a1021;border:1px solid var(--line);border-radius:10px}.stat b{display:block;color:var(--cyan);font-size:18px}.stat small{color:var(--muted);font-size:10px}
+.track{height:28px;margin-top:8px;border-radius:5px;background:linear-gradient(90deg,#fc4d9f,#8d65ff,#4ce5ed);position:relative;overflow:hidden}.marker{position:absolute;top:0;bottom:0;width:2px;background:white;opacity:.85}.head{position:absolute;top:0;bottom:0;width:2px;background:#ffe66d;z-index:3}
+.fxgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.fx{padding:8px;border:1px solid var(--line);border-radius:8px;background:#0b1123;font-size:11px}.fx input{accent-color:var(--pink)}
+.status{color:var(--cyan);font-size:11px;min-height:30px;margin-top:9px}.hint{font-size:11px;color:var(--muted);line-height:1.5}.pill{display:inline-block;padding:3px 7px;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:10px;margin:2px}
+@media(max-width:1050px){main{grid-template-columns:270px 1fr}.right{grid-column:1/-1}.fxgrid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){main{grid-template-columns:1fr}.right{grid-column:auto}.fxgrid{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><div><h1>ANIME <em>AMV</em> VIDEO STUDIO</h1><div class="muted">AI character clip + music beat sync + AMV effects</div></div><div><span class="pill">9:16</span><span class="pill">30 FPS export</span><span class="pill">Auto edit</span></div></header>
 <main>
 <aside class="panel">
-<h2>Media & Auto Director</h2>
-<label>Personaj rasmi</label><input id="imageFile" type="file" accept="image/*">
+<h2>Media input</h2>
+<label>AI animatsion personaj videosi</label><input id="videoFile" type="file" accept="video/*">
 <label>Musiqa fayli</label><input id="audioFile" type="file" accept="audio/*">
-<label>Qo‘shimcha fon rasmi (ixtiyoriy)</label><input id="bgFile" type="file" accept="image/*">
+<label>Fon rasmi (ixtiyoriy)</label><input id="bgFile" type="file" accept="image/*">
+<h3>Background</h3>
+<label>Fon rejimi</label><select id="bgMode"><option value="original">Videodagi asl fon</option><option value="chroma">Yashil fonni olib tashlash (chroma key)</option><option value="image">Yuklangan fon rasmi</option></select>
+<label>Chroma key sezgirligi</label><input id="tolerance" type="range" min="20" max="150" value="75">
 <h3>Auto director</h3>
 <label>Montaj uslubi</label><select id="style"><option value="hybrid">AMV Hybrid</option><option value="neon">Neon Rush</option><option value="dream">Dreamy Sakura</option><option value="dark">Dark Impact</option></select>
-<label>Effekt kuchi: <b id="powerLabel">75%</b></label><input id="power" type="range" min="10" max="100" value="75">
-<label>Beatga moslash</label><select id="beatMode"><option value="strong">Kuchli</option><option value="normal" selected>O‘rtacha</option><option value="soft">Yumshoq</option></select>
-<label>Davomiylik</label><select id="length"><option value="all">Butun musiqa</option><option value="30">30 soniya</option><option value="15">15 soniya</option></select>
-<div class="grid2"><button id="analyze" class="secondary">♫ Tahlil</button><button id="build" class="primary">✦ Auto edit</button></div>
-<h3>Character motion controls</h3>
-<label>Harakat amplitudasi <b id="motionLabel">60%</b></label><input id="motion" type="range" min="0" max="100" value="60">
-<div class="grid2"><button id="poseA" class="secondary tiny">Pose: sway</button><button id="poseB" class="secondary tiny">Pose: bounce</button></div>
-<h3>Export</h3><button id="export" class="primary">Export video (WebM)</button>
-<div class="status" id="status">Rasm va musiqa yuklang.</div>
-<p class="hint">Hozirgi versiya rasmdan yangi tana pozalarini AI bilan generatsiya qilmaydi. U personaj rasmini motion-graphics usulida jonlantiradi. Haqiqiy AI image-to-video uchun keyin API ulash kerak.</p>
+<label>Effekt kuchi <b id="powerText">70%</b></label><input id="power" type="range" min="10" max="100" value="70">
+<label>Beatga moslash</label><select id="sync"><option value="strong">Kuchli</option><option value="normal" selected>O‘rtacha</option><option value="soft">Yumshoq</option></select>
+<label>Davomiylik</label><select id="length"><option value="video">Personaj videosi</option><option value="audio">Musiqa davomiyligi</option><option value="15">15 soniya</option><option value="30">30 soniya</option></select>
+<button class="secondary" id="analyze">♫ MUSIQANI TAHLIL QILISH</button><button class="primary" id="auto">✦ AUTO AMV YARATISH</button>
+<h3>Export</h3><button class="primary" id="export">VIDEO EXPORT (WEBM)</button>
+<div class="status" id="status">Avval AI animatsion video va musiqani yuklang.</div>
+<p class="hint">Maslahat: personajni fondan aniq ajratish uchun AI servisdan transparent-background video yoki yashil fonli video oling. Chroma key faqat yashil rangli fon bilan ishlaydi.</p>
 </aside>
 <section class="center">
-<div class="panel preview">
-<h2 style="width:min(100%,390px)">Live preview</h2>
-<div id="stage"><canvas id="screen" width="720" height="1280"></canvas></div>
-<div class="controls"><button id="play" class="secondary">▶ Play</button><button id="pause" class="secondary">Ⅱ Pause</button><button id="reset" class="secondary">↺ Reset</button></div>
-</div>
-<div class="panel">
-<h2>Audio analysis & timeline</h2>
-<div class="metrics"><div class="metric"><b id="bpm">—</b><small>Estimated BPM</small></div><div class="metric"><b id="beatCount">—</b><small>Beat markers</small></div><div class="metric"><b id="duration">—</b><small>Audio length</small></div></div>
-<h3>Auto edit timeline</h3><div class="timeline"><div class="ruler" id="ruler">0s</div><div class="track" id="track"><div class="playhead" id="head"></div></div></div>
-<p class="hint">Oq markerlar aniqlangan beat nuqtalari. Sariq chiziq preview vaqtini ko‘rsatadi.</p>
-</div>
+<div class="panel preview"><h2 style="width:min(100%,430px)">Live preview</h2><div id="stage"><canvas id="canvas" width="720" height="1280"></canvas></div>
+<div class="controls"><button class="secondary" id="play">▶ PLAY</button><button class="secondary" id="pause">Ⅱ PAUSE</button><button class="secondary" id="reset">↺ RESET</button></div></div>
+<div class="panel"><h2>Audio analysis & timeline</h2><div class="stats"><div class="stat"><b id="bpm">—</b><small>Taxminiy BPM</small></div><div class="stat"><b id="beats">—</b><small>Beat nuqtalari</small></div><div class="stat"><b id="dur">—</b><small>Audio davomiyligi</small></div></div>
+<h3>Beat timeline</h3><div class="track" id="track"><div class="head" id="head"></div></div><p class="hint">Oq chiziqlar aniqlangan beat nuqtalari, sariq chiziq joriy vaqt.</p></div>
 </section>
-<aside class="panel right">
-<h2>Visual effects</h2>
-<div class="effect-list" id="effects">
-<label class="effect"><input type="checkbox" data-fx="glow" checked> Neon glow</label>
-<label class="effect"><input type="checkbox" data-fx="particles" checked> Particles</label>
-<label class="effect"><input type="checkbox" data-fx="flash" checked> Beat flash</label>
-<label class="effect"><input type="checkbox" data-fx="shake" checked> Camera shake</label>
-<label class="effect"><input type="checkbox" data-fx="rgb" checked> RGB split</label>
-<label class="effect"><input type="checkbox" data-fx="rings" checked> Energy rings</label>
-<label class="effect"><input type="checkbox" data-fx="scan" > Scanlines</label>
-<label class="effect"><input type="checkbox" data-fx="vignette" checked> Vignette</label>
+<aside class="panel right"><h2>Visual effects</h2><div class="fxgrid">
+<label class="fx"><input type="checkbox" data-fx="glow" checked> Neon glow</label><label class="fx"><input type="checkbox" data-fx="particles" checked> Particles</label>
+<label class="fx"><input type="checkbox" data-fx="flash" checked> Beat flash</label><label class="fx"><input type="checkbox" data-fx="shake" checked> Camera shake</label>
+<label class="fx"><input type="checkbox" data-fx="rgb" checked> RGB split</label><label class="fx"><input type="checkbox" data-fx="rings" checked> Energy rings</label>
+<label class="fx"><input type="checkbox" data-fx="scan"> Scanlines</label><label class="fx"><input type="checkbox" data-fx="vignette" checked> Vignette</label>
 </div>
-<h3>Camera</h3><label>Zoom amount</label><input id="zoom" type="range" min="0" max="30" value="12">
-<label>Rotation amount</label><input id="rotation" type="range" min="0" max="100" value="35">
-<h3>Output</h3><span class="pill">MP4: not built-in</span><span class="pill">WebM: supported</span>
-<p class="hint">WebM eksportini Chrome’da ishlating. Zarur bo‘lsa keyin MP4 ga aylantirish mumkin.</p>
-</aside>
-</main>
-<audio id="audio"></audio>
+<h3>Camera motion</h3><label>Zoom <b id="zoomText">12%</b></label><input id="zoom" type="range" min="0" max="30" value="12">
+<label>Shake <b id="shakeText">35%</b></label><input id="shake" type="range" min="0" max="100" value="35">
+<h3>Output</h3><span class="pill">WebM export</span><span class="pill">30 FPS</span>
+<p class="hint">Bu editor AI videodagi mavjud tana harakatlarini saqlaydi va ularga montaj effektlari qo‘shadi. Yangi tana harakatlarini generatsiya qilish AI video servisining vazifasi.</p>
+</aside></main>
+<video id="sourceVideo" playsinline muted loop style="display:none"></video><audio id="audio" loop></audio>
 <script>
-const $=id=>document.getElementById(id), canvas=$('screen'),ctx=canvas.getContext('2d'),audio=$('audio');
-let charImg=null,bgImg=null,beats=[],audioDuration=0,ready=false,playing=false,elapsed=0,startClock=0,raf=0,recording=false, audioContext=null,mediaSource=null,dest=null;
-let pose='sway',particles=Array.from({length:110},()=>({x:Math.random(),y:Math.random(),r:1+Math.random()*3,v:.12+Math.random()*.65}));
+const $=id=>document.getElementById(id),c=$('canvas'),ctx=c.getContext('2d'),vid=$('sourceVideo'),aud=$('audio');
+let bg=null,beats=[],audioCtx=null,srcNode=null,dest=null,analyzed=false,built=false,playing=false,clock=0,start=0,raf=0,videoUrl=null,audioUrl=null;
 const colors={hybrid:['#ff4fa3','#52eaff'],neon:['#39f5ff','#ff43cb'],dream:['#ff9fe0','#b6a1ff'],dark:['#ff315f','#6d69ff']};
-function say(t){$('status').textContent=t}
-function fmt(t){return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')}
-function fx(name){return !!document.querySelector('[data-fx="'+name+'"]').checked}
-$('imageFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{charImg=im;draw(elapsed);say('Personaj rasmi yuklandi.')};im.src=URL.createObjectURL(f)};
-$('bgFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{bgImg=im;draw(elapsed);say('Fon rasmi yuklandi.')};im.src=URL.createObjectURL(f)};
-$('audioFile').onchange=e=>{let f=e.target.files[0];if(!f)return;audio.src=URL.createObjectURL(f);audio.load();say('Musiqa yuklandi. Tahlil qiling.')};
-$('power').oninput=e=>$('powerLabel').textContent=e.target.value+'%';$('motion').oninput=e=>$('motionLabel').textContent=e.target.value+'%';
-$('poseA').onclick=()=>{pose='sway';say('Sway motion tanlandi.')};$('poseB').onclick=()=>{pose='bounce';say('Bounce motion tanlandi.')};
-async function analyze(){
- if(!audio.src){say('Avval musiqa yuklang.');return}
- try{audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();let ab=await(await fetch(audio.src)).arrayBuffer(),buf=await audioContext.decodeAudioData(ab.slice(0));audioDuration=buf.duration;
- let d=buf.getChannelData(0),sr=buf.sampleRate,step=Math.floor(sr*.04),env=[];
- for(let i=0;i<d.length;i+=step){let n=Math.min(step,d.length-i),s=0;for(let j=0;j<n;j++)s+=d[i+j]*d[i+j];env.push(Math.sqrt(s/n))}
- let sorted=[...env].sort((a,b)=>a-b),threshold=sorted[Math.floor(sorted.length*.78)]||.05;beats=[];let prev=-99;
- for(let i=1;i<env.length-1;i++)if(env[i]>threshold&&env[i]>=env[i-1]&&env[i]>env[i+1]&&i-prev>7){beats.push(i*.04);prev=i}
- if(beats.length<5){beats=[];for(let t=0;t<audioDuration;t+=.5)beats.push(t)}
- let dif=[];for(let i=1;i<Math.min(beats.length,80);i++)dif.push(beats[i]-beats[i-1]);let avg=dif.length?dif.reduce((a,b)=>a+b,0)/dif.length:.5;
- $('bpm').textContent=Math.round(60/avg);$('beatCount').textContent=beats.length;$('duration').textContent=fmt(audioDuration);renderTimeline();say('Audio tahlili tugadi. Endi Auto edit bosing.');
- }catch(e){console.error(e);say('Audio tahlilida xatolik. MP3 yoki WAV faylini tekshiring.')}}
-function renderTimeline(){let tr=$('track');tr.querySelectorAll('.marker').forEach(x=>x.remove());beats.forEach(t=>{let m=document.createElement('i');m.className='marker';m.style.left=(t/audioDuration*100)+'%';tr.appendChild(m)});$('ruler').textContent='0s　　　　　　　　　'+fmt(audioDuration/2)+'　　　　　　　　　'+fmt(audioDuration)}
-function total(){let v=$('length').value;return v==='all'?audioDuration:Number(v)}
-function beatPulse(t){if(!beats.length)return 0;let d=Infinity;for(let b of beats){let x=Math.abs(t-b);if(x<d)d=x;if(b>t+.2)break}return Math.max(0,1-d/.13)}
-function draw(t){
- let w=canvas.width,h=canvas.height,p=Number($('power').value)/100,m=Number($('motion').value)/100,z=Number($('zoom').value)/100,rot=Number($('rotation').value)/100,style=$('style').value,c=colors[style],pulse=beatPulse(t),mode=$('beatMode').value,beatGain=mode==='strong'?1:mode==='normal'?.65:.35;
- ctx.clearRect(0,0,w,h);
- let bg=ctx.createRadialGradient(w*.5,h*.45,10,w*.5,h*.5,h*.8);bg.addColorStop(0,style==='dark'?'#34213e':'#29284f');bg.addColorStop(1,'#050713');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
- if(bgImg){ctx.globalAlpha=.4;cover(bgImg,0,0,w,h);ctx.globalAlpha=1}
- // particles behind character
- if(fx('particles')){for(let q of particles){let yy=(q.y-t*q.v*.055)%1;if(yy<0)yy+=1;ctx.globalAlpha=.35;ctx.fillStyle=c[1];ctx.beginPath();ctx.arc(q.x*w,yy*h,q.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
- let motionAmt=m*p, sway=pose==='sway'?Math.sin(t*2.2)*.025*motionAmt:Math.sin(t*5)*.035*motionAmt;
- let bounce=pose==='bounce'?Math.abs(Math.sin(t*4))*35*motionAmt:Math.sin(t*2)*12*motionAmt;
- let shake=fx('shake')?pulse*18*p*beatGain:0,zoom=1+z*p*(.5+.5*Math.sin(t*1.5))+pulse*.11*beatGain*p;
- if(charImg){let scale=Math.min(w*.93/charImg.width,h*.76/charImg.height),cw=charImg.width*scale,ch=charImg.height*scale;
- ctx.save();ctx.translate(w/2+(Math.random()-.5)*shake,h*.51+bounce);ctx.rotate(sway+Math.sin(t*.8)*.012*rot);ctx.scale(zoom,zoom);
- if(fx('glow')){ctx.shadowColor=c[0];ctx.shadowBlur=42*p}
- if(fx('rgb')&&pulse>.25){ctx.globalAlpha=.28;ctx.drawImage(charImg,-cw/2-7,-ch/2+25,cw,ch);ctx.globalAlpha=1}
- ctx.drawImage(charImg,-cw/2,-ch/2+25,cw,ch);ctx.restore();
- }else{ctx.fillStyle='#b5bad5';ctx.font='28px Arial';ctx.textAlign='center';ctx.fillText('UPLOAD CHARACTER IMAGE',w/2,h/2)}
- // energy rings
- if(fx('rings')){ctx.save();ctx.globalCompositeOperation='screen';for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(w/2,h*.53,190+i*60+pulse*28,280+i*75+pulse*28,t*.12,0,Math.PI*2);ctx.strokeStyle=c[i%2];ctx.globalAlpha=.16*p;ctx.lineWidth=3;ctx.stroke()}ctx.restore()}
- if(fx('flash')&&pulse>.75){ctx.fillStyle=c[0];ctx.globalAlpha=(pulse-.75)*.55*p;ctx.fillRect(0,0,w,h);ctx.globalAlpha=1}
- if(fx('scan')){ctx.fillStyle='#fff';ctx.globalAlpha=.07;for(let y=0;y<h;y+=8)ctx.fillRect(0,y,w,1);ctx.globalAlpha=1}
- if(fx('vignette')){let v=ctx.createRadialGradient(w/2,h/2,h*.25,w/2,h/2,h*.8);v.addColorStop(0,'transparent');v.addColorStop(1,'#02030bdc');ctx.fillStyle=v;ctx.fillRect(0,0,w,h)}
- ctx.fillStyle='#fff';ctx.font='bold 25px Arial';ctx.textAlign='left';ctx.fillText('AMV MOTION',28,50);
- ctx.fillStyle=c[1];ctx.fillRect(28,h-34,(w-56)*Math.min(1,t/(total()||1)),4);
-}
-function cover(img,x,y,w,h){let r=Math.max(w/img.width,h/img.height),iw=img.width*r,ih=img.height*r;ctx.drawImage(img,x+(w-iw)/2,y+(h-ih)/2,iw,ih)}
-function tick(now){if(!playing)return;elapsed=(now-startClock)/1000;if(elapsed>=total()){pause();return}draw(elapsed);$('head').style.left=(elapsed/(audioDuration||1)*100)+'%';raf=requestAnimationFrame(tick)}
-function play(){if(!ready){say('Avval rasm, musiqa, tahlil va Auto edit kerak.');return}playing=true;startClock=performance.now()-elapsed*1000;audio.currentTime=elapsed;audio.play().catch(()=>{});audioContext?.resume();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick)}
-function pause(){playing=false;audio.pause();cancelAnimationFrame(raf)}
-$('analyze').onclick=analyze;
-$('build').onclick=()=>{if(!charImg||!audio.src||!beats.length){say('Personaj va musiqa yuklang, so‘ng tahlil qiling.');return}ready=true;elapsed=0;draw(0);say('Auto edit tayyor. Play tugmasini bosing.')};
-$('play').onclick=play;$('pause').onclick=()=>{pause();say('Preview pauza qilindi.')};$('reset').onclick=()=>{pause();elapsed=0;audio.currentTime=0;draw(0);$('head').style.left='0%'};
-$('export').onclick=async()=>{
- if(!ready){say('Avval Auto edit yarating.');return}
- if(!canvas.captureStream||!window.MediaRecorder){say('Chrome brauzerida ochib ko‘ring: video eksport qo‘llanmayapti.');return}
- try{
- pause();elapsed=0;audio.currentTime=0;
- const stream=canvas.captureStream(30);
- if(!audioContext)audioContext=new(window.AudioContext||window.webkitAudioContext)();
- if(!mediaSource){mediaSource=audioContext.createMediaElementSource(audio);dest=audioContext.createMediaStreamDestination();mediaSource.connect(audioContext.destination);mediaSource.connect(dest)}
- dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
- let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';
- let rec=new MediaRecorder(stream,{mimeType:mime}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
- rec.onstop=()=>{let u=URL.createObjectURL(new Blob(chunks,{type:'video/webm'})),a=document.createElement('a');a.href=u;a.download='anime-amv-motion.webm';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);say('Eksport tugadi: anime-amv-motion.webm')};
- rec.start();await audioContext.resume();audio.currentTime=0;await audio.play();let begin=performance.now(),len=total();say('Video yozilmoqda. Jarayon tugaguncha sahifani yopmang.');
- function frame(now){let t=(now-begin)/1000;draw(t);$('head').style.left=(t/(audioDuration||1)*100)+'%';if(t<len)requestAnimationFrame(frame);else{audio.pause();rec.stop()}}requestAnimationFrame(frame);
- }catch(e){console.error(e);say('Eksportda xatolik yuz berdi. Chrome’da qayta urinib ko‘ring.')}
-};
+const particles=Array.from({length:100},()=>({x:Math.random(),y:Math.random(),r:1+Math.random()*3,v:.15+Math.random()*.6}));
+function say(t){$('status').textContent=t}function fmt(t){return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')}
+function has(n){return document.querySelector('[data-fx="'+n+'"]').checked}
+$('videoFile').onchange=e=>{let f=e.target.files[0];if(!f)return;if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(f);vid.src=videoUrl;vid.load();vid.onloadedmetadata=()=>{draw(0);say('AI personaj videosi yuklandi: '+fmt(vid.duration))}};
+$('audioFile').onchange=e=>{let f=e.target.files[0];if(!f)return;if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(f);aud.src=audioUrl;aud.load();say('Musiqa yuklandi.')};
+$('bgFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let im=new Image();im.onload=()=>{bg=im;draw(clock);say('Fon rasmi yuklandi.')};im.src=URL.createObjectURL(f)};
+$('power').oninput=e=>$('powerText').textContent=e.target.value+'%';$('zoom').oninput=e=>$('zoomText').textContent=e.target.value+'%';$('shake').oninput=e=>$('shakeText').textContent=e.target.value+'%';
+function dur(){let v=$('length').value;if(v==='video')return vid.duration||0;if(v==='audio')return aud.duration||vid.duration||0;return Number(v)}
+async function analyze(){if(!audioUrl){say('Avval musiqa yuklang.');return}try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();let ab=await(await fetch(audioUrl)).arrayBuffer(),buf=await audioCtx.decodeAudioData(ab.slice(0)),d=buf.getChannelData(0),sr=buf.sampleRate,step=Math.floor(sr*.04),env=[];for(let i=0;i<d.length;i+=step){let n=Math.min(step,d.length-i),s=0;for(let j=0;j<n;j++)s+=d[i+j]*d[i+j];env.push(Math.sqrt(s/n))}let sorted=[...env].sort((a,b)=>a-b),th=sorted[Math.floor(sorted.length*.78)]||.04;beats=[];let last=-999;for(let i=1;i<env.length-1;i++)if(env[i]>th&&env[i]>=env[i-1]&&env[i]>env[i+1]&&i-last>7){beats.push(i*.04);last=i}if(beats.length<4){for(let t=0;t<buf.duration;t+=.5)beats.push(t)}let ds=[];for(let i=1;i<Math.min(beats.length,70);i++)ds.push(beats[i]-beats[i-1]);let avg=ds.length?ds.reduce((a,b)=>a+b,0)/ds.length:.5;$('bpm').textContent=Math.round(60/avg);$('beats').textContent=beats.length;$('dur').textContent=fmt(buf.duration);let tr=$('track');tr.querySelectorAll('.marker').forEach(x=>x.remove());beats.forEach(t=>{let m=document.createElement('i');m.className='marker';m.style.left=(t/buf.duration*100)+'%';tr.appendChild(m)});analyzed=true;say('Musiqa tahlil qilindi. Auto AMV tugmasini bosing.')}catch(e){console.error(e);say('Tahlil xatosi: MP3 yoki WAV faylini sinang.')}}
+function pulse(t){let d=999;for(let b of beats){let q=Math.abs(t-b);if(q<d)d=q;if(b>t+.2)break}return Math.max(0,1-d/.14)}
+function cover(im,x,y,w,h){let s=Math.max(w/im.width,h/im.height),iw=im.width*s,ih=im.height*s;ctx.drawImage(im,x+(w-iw)/2,y+(h-ih)/2,iw,ih)}
+function draw(t){let w=c.width,h=c.height,p=Number($('power').value)/100,pl=pulse(t),style=$('style').value,col=colors[style];ctx.clearRect(0,0,w,h);
+let g=ctx.createRadialGradient(w/2,h*.4,5,w/2,h*.5,h*.8);g.addColorStop(0,'#28294d');g.addColorStop(1,'#050713');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+if($('bgMode').value==='image'&&bg)cover(bg,0,0,w,h);
+if(vid.readyState>=2){let zoom=1+Number($('zoom').value)/100*p*(.5+.5*Math.sin(t*1.4))+pl*.08*p,shake=has('shake')?pl*Number($('shake').value)*.22:0;ctx.save();ctx.translate(w/2+(Math.random()-.5)*shake,h/2+(Math.random()-.5)*shake);ctx.scale(zoom,zoom);
+if(has('glow')){ctx.shadowColor=col[0];ctx.shadowBlur=40*p}
+if($('bgMode').value==='chroma'){let tmp=document.createElement('canvas');tmp.width=vid.videoWidth;tmp.height=vid.videoHeight;let tc=tmp.getContext('2d');tc.drawImage(vid,0,0);let im=tc.getImageData(0,0,tmp.width,tmp.height),d=im.data,tol=Number($('tolerance').value);for(let i=0;i<d.length;i+=4){let green=d[i+1]-Math.max(d[i],d[i+2]);if(green>tol){d[i+3]=0}else if(green>tol*.45)d[i+3]=Math.max(0,255-(green-tol*.45)*3)}tc.putImageData(im,0,0);ctx.drawImage(tmp,-w/2,-h/2,w,h)}else ctx.drawImage(vid,-w/2,-h/2,w,h);
+ctx.restore()}else{ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='24px Arial';ctx.fillText('UPLOAD AI ANIMATION VIDEO',w/2,h/2)}
+if(has('particles')){for(let q of particles){let y=(q.y-t*q.v*.05)%1;if(y<0)y+=1;ctx.fillStyle=col[1];ctx.globalAlpha=.4;ctx.beginPath();ctx.arc(q.x*w,y*h,q.r,0,7);ctx.fill()}ctx.globalAlpha=1}
+if(has('rings')){ctx.save();ctx.globalCompositeOperation='screen';for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(w/2,h/2,190+i*55+pl*22,280+i*65+pl*22,t*.1,0,Math.PI*2);ctx.strokeStyle=col[i%2];ctx.globalAlpha=.15*p;ctx.lineWidth=3;ctx.stroke()}ctx.restore()}
+if(has('rgb')&&pl>.35){ctx.fillStyle=col[0];ctx.globalAlpha=.08*p;ctx.fillRect(0,0,w,h);ctx.globalAlpha=1}
+if(has('flash')&&pl>.82){ctx.fillStyle=col[0];ctx.globalAlpha=(pl-.82)*.5*p;ctx.fillRect(0,0,w,h);ctx.globalAlpha=1}
+if(has('scan')){ctx.fillStyle='#fff';ctx.globalAlpha=.06;for(let y=0;y<h;y+=8)ctx.fillRect(0,y,w,1);ctx.globalAlpha=1}
+if(has('vignette')){let v=ctx.createRadialGradient(w/2,h/2,h*.25,w/2,h/2,h*.8);v.addColorStop(0,'transparent');v.addColorStop(1,'#02030bdd');ctx.fillStyle=v;ctx.fillRect(0,0,w,h)}
+ctx.fillStyle='#fff';ctx.font='bold 24px Arial';ctx.textAlign='left';ctx.fillText('ANIME AMV',26,46);ctx.fillStyle=col[1];ctx.fillRect(26,h-30,(w-52)*Math.min(1,t/(dur()||1)),4)}
+function auto(){if(!videoUrl||!audioUrl||!analyzed){say('Yuklang: AI video + musiqa. Avval tahlil qiling.');return}built=true;clock=0;vid.currentTime=0;aud.currentTime=0;draw(0);say('Auto AMV tayyor. Play bosing.')}
+function tick(now){if(!playing)return;clock=(now-start)/1000;if(clock>=dur()){pause();return}if(vid.duration)vid.currentTime=clock%vid.duration;draw(clock);$('head').style.left=(clock/(aud.duration||dur()||1)*100)+'%';raf=requestAnimationFrame(tick)}
+function play(){if(!built){say('Avval Auto AMV yarating.');return}playing=true;start=performance.now()-clock*1000;vid.currentTime=clock%(vid.duration||1);aud.currentTime=clock%(aud.duration||1);vid.play().catch(()=>{});aud.play().catch(()=>{});audioCtx?.resume();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick)}
+function pause(){playing=false;vid.pause();aud.pause();cancelAnimationFrame(raf)}
+$('analyze').onclick=analyze;$('auto').onclick=auto;$('play').onclick=play;$('pause').onclick=()=>{pause();say('Pauza.')};$('reset').onclick=()=>{pause();clock=0;vid.currentTime=0;aud.currentTime=0;draw(0);$('head').style.left='0%'};
+$('export').onclick=async()=>{if(!built){say('Avval Auto AMV yarating.');return}if(!c.captureStream||!window.MediaRecorder){say('Chrome brauzeridan foydalaning.');return}try{pause();clock=0;vid.currentTime=0;aud.currentTime=0;let stream=c.captureStream(30);audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(!srcNode){srcNode=audioCtx.createMediaElementSource(aud);dest=audioCtx.createMediaStreamDestination();srcNode.connect(dest);srcNode.connect(audioCtx.destination)}dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm',rec=new MediaRecorder(stream,{mimeType:mime}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let u=URL.createObjectURL(new Blob(chunks,{type:'video/webm'})),a=document.createElement('a');a.href=u;a.download='anime-amv-final.webm';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);say('Eksport tugadi: anime-amv-final.webm')};rec.start();await audioCtx.resume();vid.play().catch(()=>{});aud.play().catch(()=>{});let begin=performance.now(),len=dur();say('Eksport ketmoqda. Sahifani yopmang.');function frame(now){let t=(now-begin)/1000;vid.currentTime=t%(vid.duration||1);draw(t);if(t<len)requestAnimationFrame(frame);else{pause();rec.stop()}}requestAnimationFrame(frame)}catch(e){console.error(e);say('Eksport xatosi. Chrome’da qayta urinib ko‘ring.')}}
 draw(0);
 </script></body></html>
