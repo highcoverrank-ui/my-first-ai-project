@@ -70,6 +70,16 @@ canvas#canvas{width:100%;height:100%;display:block}
   <label>Effekt kuchi <span id="strengthValue">75%</span></label><input id="strength" type="range" min="20" max="100" value="75">
   <label>Ritmga moslash</label><select id="sync"><option value="high">Kuchli — har beatda</option><option value="medium" selected>O‘rtacha</option><option value="soft">Yumshoq</option></select>
   <label>Tezlik</label><select id="speed"><option value="0.7">Sekin</option><option value="1" selected>Oddiy</option><option value="1.5">Tez</option></select>
+  <label>Ovoz reaksiyalari (xato / to‘g‘ri)</label>
+  <select id="voiceMode">
+   <option value="both">Gapiruvchi ovoz + multfilm ovozlari</option>
+   <option value="tts">Faqat gapiruvchi ovoz (“Oh no!”, “Correct!”)</option>
+   <option value="cartoon">Faqat multfilm ovozlari (exportga yoziladi)</option>
+   <option value="clips">Faqat o‘z ovoz fayllarim (exportga yoziladi)</option>
+   <option value="off">O‘chiq</option>
+  </select>
+  <label>Xato uchun ovoz fayllari (ixtiyoriy, bir nechta)</label><input id="clipNo" type="file" accept="audio/*" multiple>
+  <label>To‘g‘ri uchun ovoz fayllari (ixtiyoriy, bir nechta)</label><input id="clipOk" type="file" accept="audio/*" multiple>
   <button class="secondary" id="analyzeBtn" style="margin-top:14px">♫ MUSIQANI QAYTA TAHLIL QILISH</button>
   <button class="primary" id="autoBtn">✦ AUTO MONTAGE YARATISH</button>
 
@@ -209,6 +219,7 @@ function sfx(ok){
  if(!audioCtx)return;const n=audioCtx.currentTime;
  if(ok){tone('sine',660,null,n,.22,.5);tone('sine',990,null,n+.12,.35,.5);tone('triangle',1320,null,n+.12,.3,.2)}
  else{tone('sawtooth',160,120,n,.22,.45);tone('square',150,110,n+.28,.28,.35)}
+ playVoice(ok);
 }
 $('audioInput').onchange=e=>{const f=e.target.files[0];if(!f)return;$('musicMode').value='file';audio.src=URL.createObjectURL(f);audio.load();status('Musiqa yuklandi. Tahlil qilinmoqda...');analyze()};
 async function analyze(){
@@ -260,7 +271,7 @@ function buildSchedule(){
   heads.push({c:ci,own,steps});solvedSlots.add(own);cur+=.15;
  }
  events.sort((a,b)=>a.t-b.t);
- sched={n,slotChar,heads,events,total:cur+2.6,slotW:W/n};
+ const cel=events[events.length-1].t;sched={n,slotChar,heads,events,cel,total:cel+7,slotW:W/n};
  $('length').textContent=formatTime(sched.total);renderTimeline();
 }
 function renderTimeline(){
@@ -303,6 +314,127 @@ function drawMark(x,y,ok,pop,alpha){
  if(ok){ctx.moveTo(-32,2);ctx.lineTo(-8,28);ctx.lineTo(36,-26)}else{ctx.moveTo(-28,-28);ctx.lineTo(28,28);ctx.moveTo(28,-28);ctx.lineTo(-28,28)}
  ctx.stroke();ctx.restore();
 }
+/* ---------- Ovoz reaksiyalari ---------- */
+const FORM={a:[800,1150],o:[500,900],u:[320,800],i:[320,2200],e:[500,1800]};
+function vow(t,dur,f0,f1,v,vol=.5){
+ const o=audioCtx.createOscillator(),g=audioCtx.createGain(),lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();
+ o.type='sawtooth';o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f1,t+dur);
+ lfo.frequency.value=6;lg.gain.value=f0*.015;lfo.connect(lg);lg.connect(o.frequency);
+ FORM[v].forEach((f,i)=>{const b=audioCtx.createBiquadFilter();b.type='bandpass';b.frequency.value=f;b.Q.value=7;const bg=audioCtx.createGain();bg.gain.value=i?.6:1;o.connect(b);b.connect(bg);bg.connect(g)});
+ g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol*5,t+.03);g.gain.setValueAtTime(vol*5,Math.max(t+.03,t+dur-.05));g.gain.linearRampToValueAtTime(.0001,t+dur);
+ g.connect(sfxGain);o.start(t);lfo.start(t);o.stop(t+dur+.05);lfo.stop(t+dur+.05);
+}
+const CT_NO=[
+ n=>{vow(n,.22,250,230,'o');vow(n+.3,.75,240,95,'o')},
+ n=>{vow(n,.12,330,300,'a');vow(n+.2,.38,260,170,'o')},
+ n=>{vow(n,.95,320,120,'a')},
+ n=>{[233,220,208,196].forEach((f,i)=>vow(n+i*.32,i<3?.28:.85,f*1.5,f*(i<3?1.5:1.1),'a'))},
+ n=>{for(let i=0;i<5;i++)vow(n+i*.17,.11,330-i*12,300-i*12,'a',.4)}
+];
+const CT_OK=[
+ n=>{vow(n,.12,380,440,'a');vow(n+.15,.4,500,720,'u')},
+ n=>{vow(n,.15,520,520,'e');vow(n+.18,.6,700,720,'a')},
+ n=>{vow(n,.55,300,520,'u');vow(n+.5,.35,520,260,'a')},
+ n=>{vow(n,.12,420,420,'i');vow(n+.14,.12,520,520,'i');vow(n+.28,.5,700,700,'a')}
+];
+const PH_OK=[
+ {t:'Correct!',l:'en-US'},{t:'Yes! You found it!',l:'en-US'},{t:'Awesome!',l:'en-US'},{t:'Bingo!',l:'en-US'},{t:'Perfect match!',l:'en-US'},{t:'Wow, amazing!',l:'en-US'},{t:'Nice one!',l:'en-US'},{t:'Great job!',l:'en-US'},{t:'That is the one!',l:'en-US'},{t:'Boom, nailed it!',l:'en-US'},{t:'You got it!',l:'en-US'},{t:'Yay, perfect!',l:'en-US'}
+];
+const PH_NO=[
+ {t:'Oh no!',l:'en-US'},{t:'Uh oh!',l:'en-US'},{t:'Nooo!',l:'en-US'},{t:'Not this one!',l:'en-US'},{t:'Oopsie!',l:'en-US'},{t:'Wrong body!',l:'en-US'},{t:'Oh my!',l:'en-US'},{t:'Nope!',l:'en-US'},{t:'Yikes!',l:'en-US'},{t:'Not even close!',l:'en-US'},{t:'Oh dear!',l:'en-US'},{t:'Whoops!',l:'en-US'}
+];
+const clips={no:[],ok:[]};
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+async function loadClips(kind,files){
+ ensureAudio();clips[kind]=[];
+ for(const f of files){try{clips[kind].push(await audioCtx.decodeAudioData(await f.arrayBuffer()))}catch(e){console.error(e)}}
+ status((kind==='ok'?'To‘g‘ri':'Xato')+' uchun '+clips[kind].length+' ta ovoz fayli yuklandi.');
+}
+$('clipNo').onchange=e=>loadClips('no',e.target.files);
+$('clipOk').onchange=e=>loadClips('ok',e.target.files);
+function playClip(buf,delay){const s=audioCtx.createBufferSource();s.buffer=buf;s.connect(sfxGain);s.start(audioCtx.currentTime+delay)}
+function speakText(text,lang,pitch,rate){
+ if(!('speechSynthesis' in window))return;
+ const voices=speechSynthesis.getVoices(),u=new SpeechSynthesisUtterance(text);
+ u.lang=lang;const v=voices.find(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));if(v)u.voice=v;
+ u.pitch=pitch;u.rate=rate;u.volume=1;speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+function stopSpeech(){if('speechSynthesis' in window)speechSynthesis.cancel()}
+function speakReaction(ok){
+ if(!('speechSynthesis' in window))return;
+ const voices=speechSynthesis.getVoices(),hasUz=voices.some(v=>v.lang.toLowerCase().startsWith('uz'));
+ const p=rnd((ok?PH_OK:PH_NO).filter(x=>!x.uz||hasUz));
+ if(ok)speakText(p.t,p.l,1.2+Math.random()*.6,1.05+Math.random()*.2);
+ else speakText(p.t,p.l,Math.random()<.5?.5:1.9,Math.random()<.5?.75:1.15);
+}
+function playVoice(ok){
+ const m=$('voiceMode').value;if(m==='off')return;
+ const cl=clips[ok?'ok':'no'],delay=ok?.2:.3;
+ if((m==='clips'||m==='both')&&cl.length)playClip(rnd(cl),delay);
+ else if(m!=='tts')rnd(ok?CT_OK:CT_NO)(audioCtx.currentTime+delay);
+ if(m==='tts'||m==='both')setTimeout(()=>speakReaction(ok),delay*1000);
+}
+if('speechSynthesis' in window)speechSynthesis.getVoices();
+
+/* ---------- Bayram (tabrik) ---------- */
+const CONF_COLS=['#ff3f9d','#50eaff','#ffd84d','#2cff9a','#a88cff','#ff7a3d','#ffffff'];
+const confetti=Array.from({length:150},()=>({x:Math.random(),v:200+Math.random()*280,sw:20+Math.random()*55,w:8+Math.random()*10,h:14+Math.random()*10,c:CONF_COLS[Math.floor(Math.random()*CONF_COLS.length)],d:Math.random()*1.2,r:(Math.random()-.5)*10,ph:Math.random()*6.28}));
+const BURSTS=[{t:.1,x:150,y:330,h:330},{t:.5,x:570,y:300,h:190},{t:.9,x:360,y:200,h:50},{t:1.5,x:200,y:520,h:150},{t:1.9,x:520,y:470,h:280},{t:2.6,x:360,y:350,h:10},{t:3.2,x:150,y:240,h:200},{t:3.6,x:570,y:380,h:320},{t:4.4,x:360,y:260,h:60}];
+function star(x,y,r,rot){ctx.beginPath();for(let i=0;i<10;i++){const a=rot+i*Math.PI/5-Math.PI/2,rr=i%2?r*.45:r;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}ctx.closePath();ctx.fill()}
+function drawCelebration(ca){
+ const fade=Math.min(1,(sched.total-sched.cel-ca)/1.2);
+ // fishek chaqnashi va portlashlar
+ ctx.save();ctx.globalCompositeOperation='screen';
+ for(const b of BURSTS){
+  const age=ca-b.t;if(age<0||age>1.7)continue;
+  if(age<.12){ctx.globalAlpha=.14*(1-age/.12);ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H)}
+  for(let i=0;i<34;i++){
+   const a=i/34*Math.PI*2,sp=170+(i%3)*70,x=b.x+Math.cos(a)*sp*age,y=b.y+Math.sin(a)*sp*age+140*age*age;
+   const al=Math.max(0,1-age/1.7);ctx.globalAlpha=al*fade;ctx.fillStyle='hsl('+(b.h+(i%2)*40)+',100%,65%)';
+   ctx.beginPath();ctx.arc(x,y,1.5+4*al,0,Math.PI*2);ctx.fill();
+  }
+ }
+ ctx.restore();
+ // konfetti
+ for(const p of confetti){
+  const age=ca-p.d;if(age<0)continue;
+  const y=(age*p.v)%(H+80)-40,x=p.x*W+Math.sin(age*2+p.ph)*p.sw;
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(x,y);ctx.rotate(age*p.r);ctx.scale(1,Math.cos(age*6+p.ph));ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
+ }
+ // tabrik yozuvi
+ const pop=Math.max(.01,easeOutBack(Math.min(1,ca/.5))),pul=1+.04*Math.sin(ca*7);
+ ctx.save();ctx.translate(W/2,235);ctx.scale(pop*pul,pop*pul);ctx.textAlign='center';
+ const gr=ctx.createLinearGradient(-300,0,300,0);gr.addColorStop(0,'#ffd84d');gr.addColorStop(.5,'#ff4fa3');gr.addColorStop(1,'#43e7ff');
+ ctx.font='bold 70px Arial';ctx.lineWidth=10;ctx.strokeStyle='#1a0b2e';ctx.lineJoin='round';ctx.strokeText('TABRIKLAYMIZ!',0,0);
+ ctx.shadowColor='#ffd84d';ctx.shadowBlur=30;ctx.fillStyle=gr;ctx.fillText('TABRIKLAYMIZ!',0,0);ctx.shadowBlur=0;
+ ctx.font='bold 34px Arial';ctx.lineWidth=7;ctx.strokeText('HAMMASI TOPILDI!',0,52);ctx.fillStyle='#2cff9a';ctx.fillText('HAMMASI TOPILDI!',0,52);
+ ctx.fillStyle='#ffd84d';star(-330,-22,24,ca*2);star(330,-22,24,-ca*2);
+ ctx.restore();
+ // yulduzchalar
+ ctx.save();ctx.fillStyle='#fff';
+ for(let i=0;i<8;i++){const a=.5+.5*Math.sin(ca*5+i*1.3);ctx.globalAlpha=a*fade;star(60+((i*97)%600),420+((i*131)%160),6+a*7,ca+i)}
+ ctx.restore();
+}
+function clap(t,vol){
+ const s=audioCtx.createBufferSource(),f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();
+ s.buffer=noiseBuffer();f.type='bandpass';f.frequency.value=1200+Math.random()*1800;f.Q.value=.8;
+ env(g,t,.002,.03+Math.random()*.04,vol);s.connect(f);f.connect(g);g.connect(sfxGain);s.start(t,Math.random()*.5);s.stop(t+.12);
+}
+function celebrateSfx(){
+ if(!audioCtx)return;const n=audioCtx.currentTime+.12;
+ setTimeout(()=>{const m=$('voiceMode').value;if(m==='tts'||m==='both')speakText('Congratulations! You found them all!','en-US',1.3,1.05)},700);
+ // fanfara
+ [523,659,784,1047].forEach((f,i)=>{tone('square',f,null,n+i*.13,.22,.16);tone('triangle',f,null,n+i*.13,.25,.2)});
+ [523,659,784,1047].forEach(f=>{tone('triangle',f,null,n+.55,1.3,.18);tone('sawtooth',f/2,null,n+.55,1.0,.05)});
+ // fishek portlashlari
+ BURSTS.forEach(b=>{tone('sawtooth',1500,250,n+b.t,.28,.07);const s=audioCtx.createBufferSource(),g=audioCtx.createGain();s.buffer=noiseBuffer();env(g,n+b.t,.002,.18,.14);s.connect(g);g.connect(sfxGain);s.start(n+b.t);s.stop(n+b.t+.25)});
+ // olqish
+ const bed=audioCtx.createBufferSource(),bf=audioCtx.createBiquadFilter(),bg=audioCtx.createGain();
+ bed.buffer=noiseBuffer();bed.loop=true;bf.type='bandpass';bf.frequency.value=1500;bf.Q.value=.4;
+ bg.gain.setValueAtTime(.0001,n+.3);bg.gain.linearRampToValueAtTime(.12,n+.9);bg.gain.setValueAtTime(.12,n+3.4);bg.gain.linearRampToValueAtTime(0,n+5);
+ bed.connect(bf);bf.connect(bg);bg.connect(sfxGain);bed.start(n+.3);bed.stop(n+5.1);
+ for(let i=0;i<130;i++){const u=Math.random(),at=n+.35+Math.pow(u,.8)*4.2,fall=Math.min(1,(n+5-at)/1.2);clap(at,.35*Math.max(0,fall))}
+}
 function draw(t){
  const mood=$('mood').value,colors=palettes[mood],power=Number($('strength').value)/100;
  const sync=$('sync').value,amount=sync==='high'?1:sync==='medium'?.65:.35,pulse=pulseAt(t);
@@ -320,20 +452,20 @@ function draw(t){
  if(!sched){
   ctx.fillStyle='#ffffffcc';ctx.font='bold 34px Arial';ctx.textAlign='center';ctx.fillText('Kamida 2 ta personaj yuklang',W/2,H/2);ctx.textAlign='left';return;
  }
- const sw=sched.slotW;let solved=0;
+ const sw=sched.slotW;let solved=0;const ca=t-sched.cel,bnc=j=>ca>0?Math.abs(Math.sin(ca*5+j*.7))*26*Math.min(1,ca/.5):0;
  // yerdagi soya
  for(let j=0;j<sched.n;j++){ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(sw*(j+.5),GROUND+6,sw*.38,14,0,0,Math.PI*2);ctx.fill()}
  // tanalar
  for(let j=0;j<sched.n;j++){
   const c=chars[sched.slotChar[j]],g=geo(c,sw),bw=g.w*g.s;
   ctx.save();ctx.shadowColor=colors[j%2];ctx.shadowBlur=22*power;
-  ctx.drawImage(c.cut,0,g.hp,g.w,g.h-g.hp,sw*(j+.5)-bw/2,GROUND-g.bodyH,bw,g.bodyH);ctx.restore();
+  ctx.drawImage(c.cut,0,g.hp,g.w,g.h-g.hp,sw*(j+.5)-bw/2,GROUND-g.bodyH-bnc(j),bw,g.bodyH);ctx.restore();
  }
  // boshlar
  const hs=sched.heads.map(h=>({h,s:headState(h,t)})).sort((a,b)=>(a.s.moving?1:0)-(b.s.moving?1:0));
  for(const {h,s} of hs){
   const c=chars[h.c],g=geo(c,sw),hw=g.w*g.s,hh=g.hp*g.s;
-  ctx.save();ctx.translate(s.x,s.y-hh/2);ctx.rotate(s.rot);ctx.shadowColor=colors[h.c%2];ctx.shadowBlur=28*power;
+  ctx.save();ctx.translate(s.x,s.y-hh/2-bnc(h.own));ctx.rotate(s.rot);ctx.shadowColor=colors[h.c%2];ctx.shadowBlur=28*power;
   ctx.drawImage(c.cut,0,0,g.w,g.hp,-hw/2,-hh/2,hw,hh);ctx.restore();
  }
  // belgilar
@@ -353,23 +485,25 @@ function draw(t){
  ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='bold 36px Arial';ctx.shadowColor=colors[0];ctx.shadowBlur=18;
  ctx.fillText('KIMNING BOSHI QAYSI TANADA?',W/2,70);ctx.shadowBlur=0;
  ctx.font='bold 26px Arial';ctx.fillStyle=colors[1];ctx.fillText('To‘g‘ri: '+solved+' / '+sched.n,W/2,108);
- if(solved===sched.n){ctx.save();ctx.font='bold 54px Arial';ctx.fillStyle='#2cff9a';ctx.shadowColor='#2cff9a';ctx.shadowBlur=30;ctx.translate(W/2,H*.5);ctx.scale(1+.05*Math.sin(t*8),1+.05*Math.sin(t*8));ctx.fillText('HAMMASI TOPILDI!',0,0);ctx.restore()}
+ if(ca>=0)drawCelebration(ca);
  ctx.textAlign='left';
  const vign=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vign.addColorStop(0,'transparent');vign.addColorStop(1,'#02030b99');ctx.fillStyle=vign;ctx.fillRect(0,0,W,H);
  ctx.fillStyle=colors[1];ctx.fillRect(34,H-40,(W-68)*Math.min(1,t/sched.total),5);
 }
 
 /* ---------- Pleyer ---------- */
-function resetSfx(t){sfxIdx=sched?sched.events.findIndex(e=>e.t>t):0;if(sfxIdx<0)sfxIdx=sched?sched.events.length:0}
+let celFired=false;
+function resetSfx(t){sfxIdx=sched?sched.events.findIndex(e=>e.t>t):0;if(sfxIdx<0)sfxIdx=sched?sched.events.length:0;celFired=sched?t>sched.cel:false}
 function tick(now){
  if(!running)return;
  elapsed=(now-startAt)/1000;
  while(sfxIdx<sched.events.length&&sched.events[sfxIdx].t<=elapsed){sfx(sched.events[sfxIdx].ok);sfxIdx++}
+ if(!celFired&&elapsed>=sched.cel){celFired=true;celebrateSfx()}
  if(elapsed>=sched.total){elapsed=sched.total;draw(elapsed);finish();return}
  draw(elapsed);raf=requestAnimationFrame(tick);
 }
 function finish(){
- running=false;cancelAnimationFrame(raf);audio.pause();stopGen();
+ running=false;cancelAnimationFrame(raf);audio.pause();stopGen();stopSpeech();
  if(recorder){const r=recorder;recorder=null;r.stop()}
 }
 function play(){
@@ -381,7 +515,7 @@ function play(){
  else if(audio.src){try{audio.currentTime=musicDur?elapsed%musicDur:0}catch(e){}audio.play().catch(()=>{})}
  cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
 }
-function pause(){running=false;cancelAnimationFrame(raf);audio.pause();stopGen()}
+function pause(){running=false;cancelAnimationFrame(raf);audio.pause();stopGen();stopSpeech()}
 $('autoBtn').onclick=()=>{buildSchedule();if(!sched){status('Kamida 2 ta personaj rasmi kerak.');return}pause();elapsed=0;draw(0);status('Yangi auto-montaj tayyor. PLAY ni bosing.')};
 $('playBtn').onclick=play;
 $('pauseBtn').onclick=()=>{pause();status('Preview pauza qilindi.')};
@@ -489,7 +623,7 @@ function exportVideo(){
   rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
   rec.onstop=()=>{const url=URL.createObjectURL(new Blob(chunks,{type:'video/webm'})),a=document.createElement('a');a.href=url;a.download='anime-amv-kimning-boshi.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);status('Video eksport qilindi: anime-amv-kimning-boshi.webm')};
   recorder=rec;rec.start();play();
-  status('Video yozilmoqda ('+Math.round(sched.total)+' soniya)... sahifani yopmang va tabni almashtirmang.');
+  const vm=$('voiceMode').value;status('Video yozilmoqda ('+Math.round(sched.total)+' soniya)... sahifani yopmang va tabni almashtirmang.'+((vm==='tts'||vm==='both')?' Eslatma: brauzerning gapiruvchi ovozi videoga yozilmaydi, multfilm ovozlari yoziladi.':''));
  }catch(e){console.error(e);status('Eksport xatosi. Chrome da qayta urinib ko‘ring.')}
 }
 $('exportBtn').onclick=exportVideo;
