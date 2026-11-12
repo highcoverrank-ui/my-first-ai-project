@@ -50,6 +50,9 @@ canvas#canvas{width:100%;height:100%;display:block}
 <main>
  <aside class="panel">
   <h2>1. Personajlar (6 tagacha)</h2>
+  <label>6 ta personaj rasmini birdaniga yuklash</label>
+  <input id="bulkChars" type="file" accept="image/*" multiple>
+  <div class="note">Rasmlarni birgalikda tanlang — ular 1–6-personajlarga tartib bilan joylanadi. Alohida yuklash ham saqlangan.</div>
   <div id="cards"></div>
   <label>Fonni o‘chirish usuli</label>
   <select id="method">
@@ -147,6 +150,25 @@ for(let i=0;i<6;i++){
  };
  $('cs'+i).oninput=e=>{if(!chars[i])return;chars[i].ratio=e.target.value/100;$('cr'+i).textContent=e.target.value+'%';renderThumb(i)};
 }
+
+
+// Bir martada 6 tagacha personaj rasmini yuklash
+$('bulkChars').onchange=async e=>{
+ const files=Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'));
+ if(!files.length)return;
+ if(files.length>6)status('Faqat dastlabki 6 ta rasm olinadi.');
+ for(let i=0;i<Math.min(files.length,6);i++){
+  try{
+   const f=files[i],url=URL.createObjectURL(f),img=await loadImg(url);
+   chars[i]={file:f,img,ratio:.28,cut:null};
+   $('cs'+i).value=28;$('cr'+i).textContent='28%';
+   await processChar(i);
+   URL.revokeObjectURL(url);
+  }catch(err){status('Personaj '+(i+1)+' rasmini yuklashda xatolik.');}
+ }
+ status(files.length+' ta personaj rasmi yuklandi.');
+ e.target.value='';
+};
 
 /* ---------- Fonni o'chirish ---------- */
 function toCanvas(img,maxSide=900){
