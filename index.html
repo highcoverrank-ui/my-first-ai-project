@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -51,9 +50,6 @@ canvas#canvas{width:100%;height:100%;display:block}
 <main>
  <aside class="panel">
   <h2>1. Personajlar (6 tagacha)</h2>
-  <label>6 ta personajni birdaniga yuklash</label>
-  <input id="batchChars" type="file" accept="image/*" multiple>
-  <div class="sub" style="margin:6px 0 12px">Bir martada 6 tagacha rasm tanlang — ular avtomatik 1–6-joylarga joylashadi.</div>
   <div id="cards"></div>
   <label>Fonni o‘chirish usuli</label>
   <select id="method">
@@ -126,7 +122,7 @@ const LAYS={
 };
 let fmt='p',LAY=LAYS.p,W=720,H=1280,GROUND=1150;
 const canvas=$('canvas'),ctx=canvas.getContext('2d'),audio=$('audio');
-let chars=Array(6).fill(null), bgImg=null, beats=[], musicDur=0, sched=null;
+let chars=[null,null,null,null,null,null], bgImg=null, beats=[], musicDur=0, sched=null;
 let running=false,startAt=0,elapsed=0,raf=0,sfxIdx=0,recorder=null;
 let audioCtx=null,musicGain=null,sfxGain=null,mediaDest=null,musicSrc=null;
 const particles=Array.from({length:90},()=>({x:Math.random(),y:Math.random(),s:1+Math.random()*4,v:.15+Math.random()*.7}));
@@ -151,29 +147,6 @@ for(let i=0;i<6;i++){
  };
  $('cs'+i).oninput=e=>{if(!chars[i])return;chars[i].ratio=e.target.value/100;$('cr'+i).textContent=e.target.value+'%';renderThumb(i)};
 }
-
-// 6 ta personaj rasmini bir martada tanlash va avtomatik joylashtirish
-$('batchChars').onchange=async e=>{
- const files=Array.from(e.target.files||[]).slice(0,6);
- if(!files.length)return;
- for(let i=0;i<6;i++){
-  chars[i]=null;
-  $('ci'+i).value='';
-  $('th'+i).getContext('2d').clearRect(0,0,128,184);
- }
- try{
-  for(let i=0;i<files.length;i++){
-   const f=files[i];
-   const img=await loadImg(URL.createObjectURL(f));
-   chars[i]={file:f,img,ratio:.28,cut:null};
-   $('ci'+i).value='';
-   $('cs'+i).value=28;$('cr'+i).textContent='28%';
-   await processChar(i);
-  }
-  status(files.length+' ta personaj avtomatik joylashtirildi.');
- }catch(err){console.error(err);status('Rasmlardan birini yuklashda xatolik yuz berdi.');}
- e.target.value='';
-};
 
 /* ---------- Fonni o'chirish ---------- */
 function toCanvas(img,maxSide=900){
@@ -241,8 +214,8 @@ function ensureAudio(){
  if(audioCtx)return;
  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
  musicSrc=audioCtx.createMediaElementSource(audio);
- musicGain=audioCtx.createGain();musicGain.gain.value=.7;
- sfxGain=audioCtx.createGain();sfxGain.gain.value=1;
+ musicGain=audioCtx.createGain();musicGain.gain.value=.22;
+ sfxGain=audioCtx.createGain();sfxGain.gain.value=1.6;
  mediaDest=audioCtx.createMediaStreamDestination();
  musicSrc.connect(musicGain);musicGain.connect(audioCtx.destination);musicGain.connect(mediaDest);
  sfxGain.connect(audioCtx.destination);sfxGain.connect(mediaDest);
@@ -322,29 +295,28 @@ function renderTimeline(){
 }
 
 /* ---------- Chizish ---------- */
-const JF=[.9,1.3,1.1,.7,1.05,.82],JP=[0,1.7,3.1,4.6,2.35,5.2],JG=[1.2,.8,1.5,1.0,1.25,.95];
-function jam(ci,t){
- return{x:W/2+LAY.JX*Math.sin(t*JF[ci]+JP[ci]),y:LAY.JY+LAY.JA*Math.sin(t*JG[ci]*1.3+JP[ci]*1.4),rot:.35*Math.sin(t*2+JP[ci])};
+const JF=[.9,1.3,1.1,.7],JP=[0,1.7,3.1,4.6],JG=[1.2,.8,1.5,1.0];
+function home(ci){
+ // Barcha boshlar tepada bitta tekis qatorda turadi; navbati kelgan boshgina tanaga boradi.
+ const active=sched.slotChar,idx=active.indexOf(ci),gap=W/(active.length+1);
+ return{x:gap*(idx+1),y:LAY.JY*.46,rot:0};
 }
 function bodyTop(slot){const c=chars[sched.slotChar[slot]];return GROUND-geo(c,sched.slotW).bodyH}
 function attach(slot){return{x:sched.slotW*(slot+.5),y:bodyTop(slot)+8,rot:0}}
 function headState(h,t){
- const s=h.steps;
- if(t<s[0].t0)return{...jam(h.c,t),moving:false};
- for(let k=0;k<s.length;k++){
-  const st=s[k];
+ const base=home(h.c);
+ for(const st of h.steps){
+  if(t<st.t0)return {...base,moving:false};
   if(t<st.t1){
-   const from=k===0?jam(h.c,st.t0):attach(s[k-1].slot),to=attach(st.slot),u=easeInOut((t-st.t0)/(st.t1-st.t0));
-   return{x:from.x+(to.x-from.x)*u,y:from.y+(to.y-from.y)*u-Math.sin(Math.PI*u)*130,rot:(1-u)*from.rot*(1-u)+Math.sin(u*6)*.08,moving:true};
+   const to=attach(st.slot),u=easeInOut((t-st.t0)/(st.t1-st.t0));
+   return{x:base.x+(to.x-base.x)*u,y:base.y+(to.y-base.y)*u-Math.sin(Math.PI*u)*90,rot:Math.sin(u*6)*.04,moving:true};
   }
-  if(t<st.t2||k===s.length-1){
-   const a=attach(st.slot);
-   if(t<st.tv)return{x:a.x+Math.sin(t*16)*3,y:a.y,rot:Math.sin(t*9)*.035,moving:false};
-   const age=t-st.tv;
-   const shake=!st.ok?Math.sin(age*70)*Math.max(0,1-age/.5)*14:0;
-   return{x:a.x+shake,y:a.y,rot:!st.ok?Math.sin(age*70)*.04*Math.max(0,1-age/.5):0,moving:false};
+  if(t<st.t2){
+   const a=attach(st.slot),age=Math.max(0,t-st.tv),shake=!st.ok?Math.sin(age*70)*Math.max(0,1-age/.5)*10:0;
+   return{x:a.x+shake,y:a.y,rot:!st.ok?Math.sin(age*70)*.035*Math.max(0,1-age/.5):0,moving:false};
   }
  }
+ return {...base,moving:false};
 }
 function markY(h,st){
  const sw=sched.slotW,gb=geo(chars[sched.slotChar[st.slot]],sw),gh=geo(chars[h.c],sw);
@@ -401,12 +373,19 @@ async function loadClips(kind,files){
 }
 $('clipNo').onchange=e=>loadClips('no',e.target.files);
 $('clipOk').onchange=e=>loadClips('ok',e.target.files);
-function playClip(buf,delay){const s=audioCtx.createBufferSource();s.buffer=buf;s.connect(sfxGain);s.start(audioCtx.currentTime+delay)}
+function duckMusic(duration=1.5){
+ if(!audioCtx||!musicGain)return;
+ const now=audioCtx.currentTime;
+ musicGain.gain.cancelScheduledValues(now);
+ musicGain.gain.setTargetAtTime(.07,now,.04);
+ musicGain.gain.setTargetAtTime(.22,now+Math.max(.5,duration),.18);
+}
+function playClip(buf,delay){const s=audioCtx.createBufferSource();s.buffer=buf;s.connect(sfxGain);duckMusic(buf.duration+delay);s.start(audioCtx.currentTime+delay)}
 function speakText(text,lang,pitch,rate){
  if(!('speechSynthesis' in window))return;
  const voices=speechSynthesis.getVoices(),u=new SpeechSynthesisUtterance(text);
  u.lang=lang;const v=voices.find(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));if(v)u.voice=v;
- u.pitch=pitch;u.rate=rate;u.volume=1;speechSynthesis.cancel();speechSynthesis.speak(u);
+ u.pitch=pitch;u.rate=rate;u.volume=1;duckMusic(2.2);u.onend=()=>{if(audioCtx&&musicGain){const n=audioCtx.currentTime;musicGain.gain.cancelScheduledValues(n);musicGain.gain.setTargetAtTime(.22,n,.18)}};speechSynthesis.cancel();speechSynthesis.speak(u);
 }
 function stopSpeech(){if('speechSynthesis' in window)speechSynthesis.cancel()}
 function speakReaction(ok){
@@ -420,7 +399,7 @@ function playVoice(ok){
  const m=$('voiceMode').value;if(m==='off')return;
  const cl=clips[ok?'ok':'no'],delay=ok?.2:.3;
  if((m==='clips'||m==='both')&&cl.length)playClip(rnd(cl),delay);
- else if(m!=='tts')rnd(ok?CT_OK:CT_NO)(audioCtx.currentTime+delay);
+ else if(m!=='tts'){duckMusic(1.8);rnd(ok?CT_OK:CT_NO)(audioCtx.currentTime+delay);}
  if(m==='tts'||m==='both')setTimeout(()=>speakReaction(ok),delay*1000);
 }
 if('speechSynthesis' in window)speechSynthesis.getVoices();
@@ -513,7 +492,7 @@ function draw(t){
  // boshlar
  const hs=sched.heads.map(h=>({h,s:headState(h,t)})).sort((a,b)=>(a.s.moving?1:0)-(b.s.moving?1:0));
  for(const {h,s} of hs){
-  const c=chars[h.c],g=geo(c,sw),hw=g.w*g.s,hh=g.hp*g.s;
+  const c=chars[h.c],g=geo(c,sw),hw=Math.min(g.w*g.s,sw*.82),hh=hw*(g.hp/g.w);
   ctx.save();ctx.translate(s.x,s.y-hh/2-bnc(h.own));ctx.rotate(s.rot);ctx.shadowColor=colors[h.c%2];ctx.shadowBlur=28*power;
   ctx.drawImage(c.cut,0,0,g.w,g.hp,-hw/2,-hh/2,hw,hh);ctx.restore();
  }
