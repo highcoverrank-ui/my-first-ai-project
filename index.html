@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -49,7 +50,10 @@ canvas#canvas{width:100%;height:100%;display:block}
 </header>
 <main>
  <aside class="panel">
-  <h2>1. Personajlar (4 tagacha)</h2>
+  <h2>1. Personajlar (6 tagacha)</h2>
+  <label>6 ta personajni birdaniga yuklash</label>
+  <input id="batchChars" type="file" accept="image/*" multiple>
+  <div class="sub" style="margin:6px 0 12px">Bir martada 6 tagacha rasm tanlang — ular avtomatik 1–6-joylarga joylashadi.</div>
   <div id="cards"></div>
   <label>Fonni o‘chirish usuli</label>
   <select id="method">
@@ -122,7 +126,7 @@ const LAYS={
 };
 let fmt='p',LAY=LAYS.p,W=720,H=1280,GROUND=1150;
 const canvas=$('canvas'),ctx=canvas.getContext('2d'),audio=$('audio');
-let chars=[null,null,null,null], bgImg=null, beats=[], musicDur=0, sched=null;
+let chars=Array(6).fill(null), bgImg=null, beats=[], musicDur=0, sched=null;
 let running=false,startAt=0,elapsed=0,raf=0,sfxIdx=0,recorder=null;
 let audioCtx=null,musicGain=null,sfxGain=null,mediaDest=null,musicSrc=null;
 const particles=Array.from({length:90},()=>({x:Math.random(),y:Math.random(),s:1+Math.random()*4,v:.15+Math.random()*.7}));
@@ -135,7 +139,7 @@ const easeInOut=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
 const easeOutBack=u=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(u-1,3)+c1*Math.pow(u-1,2)};
 
 /* ---------- Personaj kartalari ---------- */
-for(let i=0;i<4;i++){
+for(let i=0;i<6;i++){
  const d=document.createElement('div');d.className='card';
  d.innerHTML=`<canvas id="th${i}" width="128" height="184"></canvas><div class="cinfo"><b>Personaj ${i+1}</b><input type="file" id="ci${i}" accept="image/*"><label>Bosh/tana chizig‘i <span id="cr${i}">28%</span></label><input type="range" id="cs${i}" min="8" max="55" value="28"></div>`;
  $('cards').appendChild(d);
@@ -147,6 +151,29 @@ for(let i=0;i<4;i++){
  };
  $('cs'+i).oninput=e=>{if(!chars[i])return;chars[i].ratio=e.target.value/100;$('cr'+i).textContent=e.target.value+'%';renderThumb(i)};
 }
+
+// 6 ta personaj rasmini bir martada tanlash va avtomatik joylashtirish
+$('batchChars').onchange=async e=>{
+ const files=Array.from(e.target.files||[]).slice(0,6);
+ if(!files.length)return;
+ for(let i=0;i<6;i++){
+  chars[i]=null;
+  $('ci'+i).value='';
+  $('th'+i).getContext('2d').clearRect(0,0,128,184);
+ }
+ try{
+  for(let i=0;i<files.length;i++){
+   const f=files[i];
+   const img=await loadImg(URL.createObjectURL(f));
+   chars[i]={file:f,img,ratio:.28,cut:null};
+   $('ci'+i).value='';
+   $('cs'+i).value=28;$('cr'+i).textContent='28%';
+   await processChar(i);
+  }
+  status(files.length+' ta personaj avtomatik joylashtirildi.');
+ }catch(err){console.error(err);status('Rasmlardan birini yuklashda xatolik yuz berdi.');}
+ e.target.value='';
+};
 
 /* ---------- Fonni o'chirish ---------- */
 function toCanvas(img,maxSide=900){
@@ -195,7 +222,7 @@ async function processChar(i){
  c.cut=cropAlpha(cv);renderThumb(i);buildSchedule();
  status(sched?'Tayyor. AUTO MONTAGE yoki PLAY ni bosing.':'Personaj '+(i+1)+' tayyor. Kamida 2 ta personaj kerak.');
 }
-async function processAll(){for(let i=0;i<4;i++)if(chars[i])await processChar(i)}
+async function processAll(){for(let i=0;i<6;i++)if(chars[i])await processChar(i)}
 function renderThumb(i){
  const c=chars[i],cv=$('th'+i),g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
  if(!c||!c.cut)return;
@@ -295,7 +322,7 @@ function renderTimeline(){
 }
 
 /* ---------- Chizish ---------- */
-const JF=[.9,1.3,1.1,.7],JP=[0,1.7,3.1,4.6],JG=[1.2,.8,1.5,1.0];
+const JF=[.9,1.3,1.1,.7,1.05,.82],JP=[0,1.7,3.1,4.6,2.35,5.2],JG=[1.2,.8,1.5,1.0,1.25,.95];
 function jam(ci,t){
  return{x:W/2+LAY.JX*Math.sin(t*JF[ci]+JP[ci]),y:LAY.JY+LAY.JA*Math.sin(t*JG[ci]*1.3+JP[ci]*1.4),rot:.35*Math.sin(t*2+JP[ci])};
 }
