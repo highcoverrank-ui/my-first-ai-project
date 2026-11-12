@@ -327,8 +327,14 @@ function bodyTop(slot){const c=chars[sched.slotChar[slot]];return GROUND-geo(c,s
 function attach(slot){return{x:sched.slotW*(slot+.5),y:bodyTop(slot)+8,rot:0}}
 function headState(h,t){
  const base=home(h.c);
- // Faqat ayni paytda navbati kelgan bosh harakatlanadi.
+ // Bosh o'z tanasini topgach, tanada qoladi; boshqa boshlar navbatini kutadi.
  for(const st of h.steps){
+  // To'g'ri tanaga yetib kelgan bosh endi hech qachon tepaga qaytmaydi.
+  if(st.ok && t>=st.t1){
+   const a=attach(st.slot);
+   return{x:a.x,y:a.y,rot:0,moving:false};
+  }
+  // Noto'g'ri tanaga vaqtincha boradi, keyin o'zining yuqoridagi joyiga qaytadi.
   if(t>=st.t0 && t<st.t1){
    const to=attach(st.slot),u=easeInOut((t-st.t0)/(st.t1-st.t0));
    return{x:base.x+(to.x-base.x)*u,y:base.y+(to.y-base.y)*u-Math.sin(Math.PI*u)*55,rot:0,moving:true};
